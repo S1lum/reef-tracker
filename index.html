@@ -374,7 +374,7 @@ input, textarea, select { font-size: 16px !important; }
       </div>
       <div style="display:flex;gap:8px">
         <button class="bcancel" onclick="closeMeasModal()" style="margin:0;padding:8px 14px;font-size:13px">✕</button>
-        <button class="bsave" onclick="saveMeasurement()" style="margin:0;padding:8px 18px;font-size:13px">Speichern</button>
+        <button class="bsave" onclick="saveMeasurement()" style="margin:0;padding:8px 18px;font-size:13px">Save</button>
       </div>
     </div>
     <div class="fsec"><div class="fsec-t">Core Parameters</div><div class="fgrid">
@@ -1089,7 +1089,7 @@ function openMeasModal(id) {
   editMeasId = id||null;
   var tank = getActiveTank();
   var entry = id?(tank.measurements||[]).find(function(e){ return e.id===id; }):null;
-  document.getElementById('measTitle').textContent = entry?'Messung bearbeiten':'Neue Messung';
+  document.getElementById('measTitle').textContent = entry?'Edit Measurement':'New Measurement';
   ALL_FIELDS.forEach(function(f){ var el=document.getElementById('f-'+f); if (el) el.value=(entry&&entry[f]!=null)?entry[f]:''; });
   var dtEl=document.getElementById('f-datetime');
   if (dtEl) {
@@ -1114,7 +1114,7 @@ function saveMeasurement() {
   entry.note=document.getElementById('f-note').value.trim();
   // Valid if at least one numeric field is filled
   var hasValue=ALL_FIELDS.some(function(f){ return entry[f]!=null; });
-  if (!hasValue) { showToast('Bitte mindestens einen Wert eingeben',true); return; }
+  if (!hasValue) { showToast('Enter at least one value',true); return; }
   if (!tank.measurements) tank.measurements=[];
   if (editMeasId) {
     var idx=tank.measurements.findIndex(function(e){ return e.id===editMeasId; });
@@ -1136,7 +1136,7 @@ function saveMeasurement() {
   saveState(); closeMeasModal();
   if (currentView==='log') renderLog();
   else { destroyCharts(); chartsBuilt=false; renderCharts(); chartsBuilt=true; }
-  showToast(editMeasId?'Aktualisiert ✓':'Gespeichert ✓');
+  showToast(editMeasId?'Updated ✓':'Saved ✓');
 }
 
 function deleteMeas(id) {
@@ -1335,7 +1335,7 @@ function uploadLocalToFirestore() {
     if (currentView === 'log') renderLog();
     else { renderCharts(); chartsBuilt = true; }
     window.fbSaveState();
-    showToast('✅ Lokale Daten in Cloud übertragen');
+    showToast('✅ Local data uploaded to cloud');
   } else {
     createDefaultTank();
     renderTabs();
@@ -1394,7 +1394,7 @@ window.fbSaveState = function() {
   var clean = deepClean(state);
   var ref = fbDb.collection('users').doc(currentUser.uid).collection('data').doc('state');
   return ref.set({ state: clean }).catch(function(e) {
-    showToast('⚠️ Speichern fehlgeschlagen: ' + e.message, true);
+    showToast('⚠️ Save failed: ' + e.message, true);
   });
 };
 
