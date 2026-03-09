@@ -1346,27 +1346,7 @@ window.fbSaveState = function() {
 };
 
 // ── Google Login ───────────────────────────────────────────────
-window.doGoogleLogin = function() {
-  var btnText = document.getElementById('loginBtnText');
-  var btn     = document.getElementById('loginBtn');
-  var errEl   = document.getElementById('loginError');
-  if (btnText) btnText.textContent = 'Verbinde…';
-  if (btn) btn.disabled = true;
-  if (errEl) errEl.style.display = 'none';
-  var p = new firebase.auth.GoogleAuthProvider();
-  p.setCustomParameters({ prompt: 'select_account' });
-  firebase.auth().signInWithPopup(p)
-    .then(function() {
-      if (btnText) btnText.textContent = 'Mit Google anmelden';
-      if (btn) btn.disabled = false;
-    })
-    .catch(function(e) {
-      if (btnText) btnText.textContent = 'Mit Google anmelden';
-      if (btn) btn.disabled = false;
-      if (errEl) { errEl.textContent = 'Fehler: ' + e.message; errEl.style.display = 'block'; }
-      console.error('Login error:', e.code, e.message);
-    });
-};
+window.doGoogleLogin = window.directLogin;
 
 window.doLogout = function() {
   if (unsubSnapshot) { unsubSnapshot(); unsubSnapshot = null; }
