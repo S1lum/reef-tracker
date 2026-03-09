@@ -14,6 +14,111 @@
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script type="module">
+// ── FIREBASE CONFIG — paste your firebaseConfig here ──────────
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+import { getFirestore, doc, setDoc, getDoc, onSnapshot }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const FIREBASE_CONFIG = {
+  // PASTE YOUR firebaseConfig HERE — replace these placeholder values:
+  apiKey:            "PASTE_YOUR_apiKey_HERE",
+  authDomain:        "PASTE_YOUR_authDomain_HERE",
+  projectId:         "PASTE_YOUR_projectId_HERE",
+  storageBucket:     "PASTE_YOUR_storageBucket_HERE",
+  messagingSenderId: "PASTE_YOUR_messagingSenderId_HERE",
+  appId:             "PASTE_YOUR_appId_HERE"
+};
+
+const fbApp  = initializeApp(FIREBASE_CONFIG);
+const fbAuth = getAuth(fbApp);
+const fbDb   = getFirestore(fbApp);
+const provider = new GoogleAuthProvider();
+
+let currentUser = null;
+let unsubSnapshot = null;
+
+// ── Auth state ─────────────────────────────────────────────────
+onAuthStateChanged(fbAuth, function(user) {
+  currentUser = user;
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appRoot').style.display    = 'block';
+    document.getElementById('userAvatar').textContent   = user.displayName ? user.displayName[0].toUpperCase() : '👤';
+    document.getElementById('userAvatar').title         = user.displayName + ' — ' + user.email;
+    var mn = document.getElementById('userMenuName');
+    if (mn) mn.textContent = user.displayName || user.email;
+    subscribeToFirestore(user.uid);
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appRoot').style.display    = 'none';
+    if (unsubSnapshot) { unsubSnapshot(); unsubSnapshot = null; }
+  }
+});
+
+// ── Firestore real-time sync ───────────────────────────────────
+function subscribeToFirestore(uid) {
+  if (unsubSnapshot) unsubSnapshot();
+  var ref = doc(fbDb, 'users', uid, 'data', 'state');
+  unsubSnapshot = onSnapshot(ref, function(snap) {
+    if (snap.exists()) {
+      var remote = snap.data().state;
+      if (remote && remote.tanks) {
+        window._suppressSave = true;
+        state = remote;
+        if (!state.activeTank && state.tanks.length) state.activeTank = state.tanks[0].id;
+        renderTabs();
+        destroyCharts(); chartsBuilt = false;
+        if (currentView === 'log') renderLog();
+        else { renderCharts(); chartsBuilt = true; }
+        window._suppressSave = false;
+      }
+    } else {
+      // First time — migrate from localStorage if available
+      var local = null;
+      try { local = JSON.parse(localStorage.getItem('reef_tracker_v3')); } catch(e){}
+      if (!local) try { local = JSON.parse(localStorage.getItem('reef_tracker_v2')); } catch(e){}
+      if (local && local.tanks && local.tanks.length) {
+        state = local;
+        window.fbSaveState();
+        showToast('✅ Lokale Daten in Cloud übertragen');
+      }
+    }
+  }, function(err) {
+    showToast('⚠️ Sync-Fehler: ' + err.message, true);
+  });
+}
+
+// ── Save to Firestore ─────────────────────────────────────────
+window.fbSaveState = async function() {
+  if (!currentUser || window._suppressSave) return;
+  try {
+    var ref = doc(fbDb, 'users', currentUser.uid, 'data', 'state');
+    await setDoc(ref, { state: state });
+  } catch(e) {
+    showToast('⚠️ Speichern fehlgeschlagen', true);
+  }
+};
+
+// ── Google Login ───────────────────────────────────────────────
+window.doGoogleLogin = async function() {
+  try {
+    document.getElementById('loginBtn').textContent = 'Verbinde…';
+    await signInWithPopup(fbAuth, provider);
+  } catch(e) {
+    document.getElementById('loginBtn').textContent = '🔑 Mit Google anmelden';
+    showToast('Login fehlgeschlagen: ' + e.message, true);
+  }
+};
+
+window.doLogout = async function() {
+  if (unsubSnapshot) { unsubSnapshot(); unsubSnapshot = null; }
+  await signOut(fbAuth);
+};
+
+</script>
 <style>
 :root{
   --bg:#0a0f1a;--surface:#111827;--surface2:#1a2235;--border:#1f2d42;
@@ -162,7 +267,26 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 .modal::-webkit-scrollbar{width:4px}
 .modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-/* ── iOS / PWA safe areas ── */
+/* ── Login Screen ── */
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;gap:24px}
+.login-fish{font-size:64px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.login-title{font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.login-sub{font-size:14px;color:var(--dim);text-align:center;line-height:1.6;max-width:280px}
+.login-btn{background:white;color:#1a1a1a;border:none;border-radius:16px;padding:16px 28px;font-size:16px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:transform .15s,box-shadow .15s;width:100%;max-width:300px;justify-content:center}
+.login-btn:active{transform:scale(.97)}
+.login-google-icon{width:20px;height:20px}
+.login-note{font-size:11px;color:var(--dim);text-align:center;opacity:.7}
+/* ── User avatar in header ── */
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-family:'Outfit',sans-serif;position:relative}
+.user-menu{position:absolute;top:44px;right:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:300;display:none}
+.user-menu.open{display:block}
+.user-menu-name{font-size:12px;font-weight:600;color:var(--dim);padding:4px 10px 8px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.user-menu-item{padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;color:var(--red);display:flex;align-items:center;gap:8px}
+.user-menu-item:active{background:var(--surface2)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);position:absolute;bottom:0;right:0;border:1.5px solid var(--bg)}
+.sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 body{
   padding-top: env(safe-area-inset-top);
   padding-bottom: env(safe-area-inset-bottom);
@@ -218,7 +342,20 @@ input, textarea, select { font-size: 16px !important; }
 </head>
 <body>
 
-<!-- PWA Install Banner -->
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" style="display:none">
+  <div class="login-fish">🐠</div>
+  <div class="login-title">Reef Tracker</div>
+  <div class="login-sub">Melde dich an um deine Aquarium-Daten geräteübergreifend zu synchronisieren.</div>
+  <button class="login-btn" id="loginBtn" onclick="doGoogleLogin()">
+    <svg class="login-google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    <span id="loginBtn">Mit Google anmelden</span>
+  </button>
+  <div class="login-note">Deine Daten werden sicher in Firebase gespeichert.<br>Nur du hast Zugriff.</div>
+</div>
+
+<!-- APP ROOT -->
+<div id="appRoot" style="display:none">
 <div class="pwa-banner" id="pwaBanner" style="display:none" onclick="openInstallGuide()">
   <div class="pwa-banner-icon">🐠</div>
   <div class="pwa-banner-text">
@@ -282,6 +419,13 @@ input, textarea, select { font-size: 16px !important; }
   <div class="hbtns">
     <div class="hbtn hbtn-icp" onclick="openIcpModal()">🧬 ICP</div>
     <div class="hbtn" onclick="openTankEdit()" title="Edit tank" style="font-size:15px">⚙️</div>
+    <div style="position:relative">
+      <button class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">👤<div class="sync-dot" id="syncDot"></div></button>
+      <div class="user-menu" id="userMenu">
+        <div class="user-menu-name" id="userMenuName">Eingeloggt</div>
+        <div class="user-menu-item" onclick="doLogout()">🚪 Abmelden</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -416,6 +560,8 @@ input, textarea, select { font-size: 16px !important; }
 
 <div class="toast" id="toast"></div>
 
+</div><!-- /#appRoot -->
+
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
@@ -521,22 +667,21 @@ var chartInstances = {};
 var chartsBuilt = false;
 var icpParsed = null;
 
-// ── Storage ───────────────────────────────────────────────────
+// ── Storage — Firebase replaces localStorage ──────────────────
 function loadState() {
-  try {
-    // Try v3 key first, then migrate from v2
-    var s = JSON.parse(localStorage.getItem(SK));
-    if (!s || !s.tanks) {
-      var v2 = JSON.parse(localStorage.getItem('reef_tracker_v2'));
-      if (v2 && v2.tanks) { s = v2; }
-    }
-    if (s && s.tanks) {
-      state = s;
-      if (!state.activeTank && state.tanks.length) state.activeTank = state.tanks[0].id;
-    } else { createDefaultTank(); }
-  } catch(e) { createDefaultTank(); }
+  // Initial empty state; Firebase onSnapshot will populate once auth is ready
+  createDefaultTank();
 }
-function saveState() { localStorage.setItem(SK, JSON.stringify(state)); }
+function saveState() {
+  // Route all saves to Firestore via the module-scoped fbSaveState
+  if (window.fbSaveState) {
+    var dot = document.getElementById('syncDot');
+    if (dot) dot.className = 'sync-dot syncing';
+    window.fbSaveState().then(function(){
+      if (dot) dot.className = 'sync-dot';
+    });
+  }
+}
 function createDefaultTank() {
   var t = {id:uid(), name:'My Reef', color:TANK_COLORS[0], measurements:[]};
   state.tanks = [t]; state.activeTank = t.id; saveState();
@@ -1202,6 +1347,22 @@ function openInstallGuide() {
 function closeInstallGuide() {
   document.getElementById('installOv').classList.remove('open');
   dismissBanner();
+}
+
+function toggleUserMenu() {
+  var m = document.getElementById('userMenu');
+  m.classList.toggle('open');
+  // Close on outside click
+  if (m.classList.contains('open')) {
+    setTimeout(function(){
+      document.addEventListener('click', function handler(e){
+        if (!m.contains(e.target) && e.target.id !== 'userAvatar') {
+          m.classList.remove('open');
+          document.removeEventListener('click', handler);
+        }
+      });
+    }, 0);
+  }
 }
 
 // ── Init ──────────────────────────────────────────────────────
