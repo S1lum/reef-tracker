@@ -1,0 +1,2564 @@
+<!DOCTYPE html>
+<!-- reef-tracker v6.0 -->
+<html lang="en">
+<head>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-app-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-auth-compat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.12.0/firebase-firestore-compat.min.js"></script>
+<script>
+window._fbLoaded = false;
+window.addEventListener('load', function() {
+  var d = document.getElementById('loginDebug');
+  if (!d) return;
+  if (typeof firebase === 'undefined') {
+    d.innerHTML = '❌ Firebase could not be loaded.<br>Please check your internet connection.';
+    d.style.color = '#ef4444';
+    d.style.display = 'block';
+  } else {
+    window._fbLoaded = true;
+  }
+});
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Reef Tracker">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0a0f1a">
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiB2aWV3Qm94PSIwIDAgMTgwIDE4MCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJiZyIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzBhMGYxYSIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzBkMWYzYyIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJ3YXZlIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzA2YjZkNCIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzNiODJmNiIvPjwvbGluZWFyR3JhZGllbnQ+PGxpbmVhckdyYWRpZW50IGlkPSJjb3JhbDEiIHgxPSIwJSIgeTE9IjEwMCUiIHgyPSIxMDAlIiB5Mj0iMCUiPjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNmOTczMTYiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNlZjQ0NDQiLz48L2xpbmVhckdyYWRpZW50PjxsaW5lYXJHcmFkaWVudCBpZD0iY29yYWwyIiB4MT0iMCUiIHkxPSIxMDAlIiB4Mj0iMCUiIHkyPSIwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6I2E4NTVmNyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6IzA2YjZkNCIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHdpZHRoPSIxODAiIGhlaWdodD0iMTgwIiByeD0iNDAiIGZpbGw9InVybCgjYmcpIi8+PHBhdGggZD0iTTAgMTEwIFE0NSA5NSA5MCAxMTAgUTEzNSAxMjUgMTgwIDExMCBMMTgwIDE4MCBMMCAxODAgWiIgZmlsbD0idXJsKCN3YXZlKSIgb3BhY2l0eT0iMC4zIi8+PHBhdGggZD0iTTAgMTI1IFE0NSAxMTAgOTAgMTI1IFExMzUgMTQwIDE4MCAxMjUgTDE4MCAxODAgTDAgMTgwIFoiIGZpbGw9InVybCgjd2F2ZSkiIG9wYWNpdHk9IjAuNSIvPjxsaW5lIHgxPSI0MCIgeTE9IjEzMCIgeDI9IjQwIiB5Mj0iOTAiIHN0cm9rZT0idXJsKCNjb3JhbDEpIiBzdHJva2Utd2lkdGg9IjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI0MCIgeTE9IjExMCIgeDI9IjI1IiB5Mj0iOTAiIHN0cm9rZT0idXJsKCNjb3JhbDEpIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxsaW5lIHgxPSI0MCIgeTE9IjEwMCIgeDI9IjU1IiB5Mj0iODIiIHN0cm9rZT0idXJsKCNjb3JhbDEpIiBzdHJva2Utd2lkdGg9IjQiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjQwIiBjeT0iODkiIHI9IjUiIGZpbGw9IiNmOTczMTYiLz48Y2lyY2xlIGN4PSIyNCIgY3k9Ijg5IiByPSI0IiBmaWxsPSIjZWY0NDQ0Ii8+PGNpcmNsZSBjeD0iNTYiIGN5PSI4MSIgcj0iNCIgZmlsbD0iI2Y5NzMxNiIvPjxsaW5lIHgxPSIxNDAiIHkxPSIxMzAiIHgyPSIxNDAiIHkyPSI4NSIgc3Ryb2tlPSJ1cmwoI2NvcmFsMikiIHN0cm9rZS13aWR0aD0iNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGxpbmUgeDE9IjE0MCIgeTE9IjEwOCIgeDI9IjEyNSIgeTI9Ijg4IiBzdHJva2U9InVybCgjY29yYWwyKSIgc3Ryb2tlLXdpZHRoPSI0IiBzdHJva2UtbGluZWNhcD0icm91bmQiLz48bGluZSB4MT0iMTQwIiB5MT0iOTgiIHgyPSIxNTgiIHkyPSI3OCIgc3Ryb2tlPSJ1cmwoI2NvcmFsMikiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+PGNpcmNsZSBjeD0iMTQwIiBjeT0iODQiIHI9IjUiIGZpbGw9IiMxNGI4YTYiLz48Y2lyY2xlIGN4PSIxMjQiIGN5PSI4NyIgcj0iNCIgZmlsbD0iI2E4NTVmNyIvPjxjaXJjbGUgY3g9IjE1OSIgY3k9Ijc3IiByPSI0IiBmaWxsPSIjMDZiNmQ0Ii8+PGVsbGlwc2UgY3g9IjkwIiBjeT0iNzIiIHJ4PSIyMiIgcnk9IjEzIiBmaWxsPSJ1cmwoI3dhdmUpIi8+PHBvbHlnb24gcG9pbnRzPSIxMTIsNzIgMTI1LDYwIDEyNSw4NCIgZmlsbD0iIzNiODJmNiIvPjxjaXJjbGUgY3g9Ijc0IiBjeT0iNjgiIHI9IjMuNSIgZmlsbD0id2hpdGUiLz48Y2lyY2xlIGN4PSI3NCIgY3k9IjY4IiByPSIyIiBmaWxsPSIjMGEwZjFhIi8+PHBhdGggZD0iTTg1IDYwIFE4OCA3MiA4NSA4NCIgc3Ryb2tlPSJyZ2JhKDI1NSwyNTUsMjU1LDAuNCkiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0ibm9uZSIvPjxjaXJjbGUgY3g9IjY1IiBjeT0iNDgiIHI9IjMiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzA2YjZkNCIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNyIvPjxjaXJjbGUgY3g9Ijc1IiBjeT0iMzgiIHI9IjIiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzNiODJmNiIgc3Ryb2tlLXdpZHRoPSIxLjUiIG9wYWNpdHk9IjAuNSIvPjxjaXJjbGUgY3g9IjU4IiBjeT0iMzUiIHI9IjEuNSIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDZiNmQ0IiBzdHJva2Utd2lkdGg9IjEuNSIgb3BhY2l0eT0iMC40Ii8+PHRleHQgeD0iOTAiIHk9IjE1NSIgZm9udC1mYW1pbHk9IkFyaWFsLHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZvbnQtd2VpZ2h0PSJib2xkIiBmaWxsPSIjMDZiNmQ0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBsZXR0ZXItc3BhY2luZz0iMSI+UkVFRjwvdGV4dD48L3N2Zz4=">
+<link rel="manifest" id="manifest-link">
+<title>Reef Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+
+<style>
+:root{
+  --bg:#0a0f1a;--surface:#111827;--surface2:#1a2235;--border:#1f2d42;
+  --text:#e8f0fe;--dim:#6b7fa3;--accent:#3b82f6;--accent2:#06b6d4;
+  --green:#22c55e;--yellow:#eab308;--orange:#f97316;--red:#ef4444;
+  --purple:#a855f7;--teal:#14b8a6;--indigo:#6366f1;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;max-width:480px;margin:0 auto;overflow-x:hidden}
+.header{position:sticky;top:0;z-index:100;background:rgba(10,15,26,.96);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+.header h1{font-size:18px;font-weight:700;letter-spacing:-.3px;background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hbtns{display:flex;gap:8px}
+.hbtn{background:var(--surface2);border:1px solid var(--border);color:var(--accent);width:38px;height:38px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;transition:all .2s}
+.hbtn:active{transform:scale(.92)}
+.hbtn-icp{width:auto;padding:0 12px;font-size:12px;font-weight:700;color:var(--teal);border-color:rgba(20,184,166,.3)}
+.tanks-wrap{padding:12px 20px 0;border-bottom:1px solid var(--border)}
+.tanks{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:12px}
+.tanks::-webkit-scrollbar{display:none}
+.tab{display:flex;align-items:center;gap:7px;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:7px 14px;font-size:13px;font-weight:500;white-space:nowrap;cursor:pointer;color:var(--dim);transition:all .2s}
+.tab.active{background:linear-gradient(135deg,rgba(59,130,246,.2),rgba(6,182,212,.15));border-color:var(--accent);color:var(--text)}
+.tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tab-add{background:transparent;border:1.5px dashed var(--border);color:var(--dim);font-size:18px;padding:5px 12px}
+.view-toggle{display:flex;margin:14px 20px 0;background:var(--surface2);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.vtab{flex:1;padding:9px 0;text-align:center;font-size:13px;font-weight:600;color:var(--dim);cursor:pointer;transition:all .2s}
+.vtab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white}
+/* ── Reminders ───────────────────────────────────────────────── */
+.rem-card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:16px;margin-bottom:12px;transition:border-color .2s}
+.rem-card.overdue{border-color:rgba(239,68,68,.4)}
+.rem-card.soon{border-color:rgba(234,179,8,.4)}
+.rem-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.rem-name{font-size:15px;font-weight:700;line-height:1.3}
+.rem-note{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.5}
+.rem-badge{flex-shrink:0;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px}
+.rem-badge.overdue{background:rgba(239,68,68,.15);color:var(--red)}
+.rem-badge.soon{background:rgba(234,179,8,.15);color:var(--yellow)}
+.rem-badge.ok{background:rgba(34,197,94,.15);color:var(--green)}
+.rem-schedule{display:flex;align-items:center;gap:6px;margin-top:8px;font-size:11px;color:var(--dim)}
+.rem-actions{display:flex;gap:8px;margin-top:12px}
+.rem-btn{flex:1;padding:9px 0;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s}
+.rem-btn:active{transform:scale(.96)}
+.rem-btn.done-btn{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.3);color:var(--green)}
+.rem-btn.del-btn{background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:var(--red)}
+.rem-empty{text-align:center;padding:48px 24px;color:var(--dim)}
+.rem-empty-icon{font-size:48px;margin-bottom:12px}
+.rem-perm-banner{background:rgba(59,130,246,.08);border:1px solid rgba(59,130,246,.25);border-radius:14px;padding:12px 14px;margin-bottom:16px;display:flex;align-items:center;gap:10px;font-size:12px;color:var(--dim)}
+.rem-perm-btn{flex-shrink:0;background:var(--accent);color:white;border:none;border-radius:8px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;cursor:pointer}
+/* new reminder form */
+.rem-form{background:var(--surface);border:1px solid rgba(59,130,246,.3);border-radius:18px;padding:16px;margin-bottom:16px}
+.rem-form-title{font-size:14px;font-weight:700;color:var(--accent2);margin-bottom:12px}
+.rem-field{margin-bottom:10px}
+.rem-field label{display:block;font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.rem-field input,.rem-field select,.rem-field textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;outline:none;box-sizing:border-box}
+.rem-field textarea{resize:none;height:60px;font-size:13px}
+.rem-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rem-save-btn{width:100%;padding:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;border:none;border-radius:12px;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px}
+.rem-add-btn{width:100%;padding:12px;background:var(--surface);border:1px dashed var(--border);border-radius:14px;color:var(--dim);font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:16px;transition:all .2s}
+.rem-add-btn:active{background:var(--surface2)}
+.content{padding:12px 16px 110px}
+.mlabel{font-size:12px;font-weight:700;color:var(--dim);letter-spacing:.6px;text-transform:uppercase;padding:14px 4px 8px}
+.mcard{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px;animation:sIn .3s ease}
+@keyframes sIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.mcard-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.mdate{font-size:13px;color:var(--dim);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.mdate strong{font-size:14px;color:var(--text);font-weight:600}
+.bicp{background:rgba(20,184,166,.15);color:var(--teal);border:1px solid rgba(20,184,166,.3);font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+.bnote{background:rgba(59,130,246,.12);color:var(--accent2);border:1px solid rgba(59,130,246,.2);font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px}
+.mcard-actions{display:flex;gap:6px}
+.medit{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:var(--accent);width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px}
+.mdel{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.2);color:var(--red);width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px}
+.medit:active,.mdel:active{transform:scale(.88)}
+.gsec{margin-top:14px}
+.gsec-t{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal);margin-bottom:8px;padding-left:2px}
+.ggrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.gi{display:flex;flex-direction:column;align-items:center;gap:5px}
+.gw{position:relative;width:64px;height:64px}
+.gsvg{width:64px;height:64px;transform:rotate(-210deg)}
+.gtrack{fill:none;stroke:var(--surface2);stroke-width:5;stroke-linecap:round}
+.gfill{fill:none;stroke-width:5;stroke-linecap:round}
+.gval{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.gnum{font-size:12px;font-weight:700;line-height:1}
+.gunit{font-size:7.5px;color:var(--dim);margin-top:1px}
+.glabel{font-size:9px;font-weight:600;color:var(--dim);text-align:center;max-width:64px;line-height:1.2}
+.val-tbl{margin-top:10px;background:var(--surface2);border-radius:12px;overflow:hidden}
+.val-tbl-hdr{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--teal);padding:8px 12px 6px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center}
+.val-tbl-hdr span{text-transform:none;letter-spacing:0;font-weight:500;color:var(--dim)}
+.val-row{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;font-size:11.5px;border-bottom:1px solid rgba(31,45,66,.4)}
+.val-row:last-child{border-bottom:none}
+.val-row:nth-child(odd){background:rgba(255,255,255,.013)}
+.val-name{color:var(--dim);font-weight:500}
+.val-val{font-weight:700;text-align:right}
+.val-val.ok{color:var(--green)}
+.val-val.warn{color:var(--yellow)}
+.val-val.bad{color:var(--red)}
+.val-val.na{color:var(--border);font-weight:400}
+.note-text{margin-top:10px;font-size:12px;color:var(--dim);padding:8px 10px;background:rgba(59,130,246,.05);border-radius:10px;border-left:2px solid rgba(59,130,246,.3)}
+.chart-view{padding:12px 16px 110px}
+.chart-section{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:16px;margin-bottom:12px}
+.cs-title{font-size:15px;font-weight:700;margin-bottom:14px}
+.param-pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.pill{padding:5px 11px;border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);color:var(--dim);background:var(--surface2);transition:all .2s}
+.pill.active{color:white;border-color:transparent}
+.chart-wrap{position:relative;height:200px}
+.no-data{text-align:center;padding:40px 0;color:var(--dim);font-size:13px}
+.fabrow{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:99}
+.fab{border:none;border-radius:24px;padding:14px 20px;font-size:13px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;white-space:nowrap}
+.fab:active{transform:scale(.95)}
+.fab-m{background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;box-shadow:0 8px 28px rgba(59,130,246,.4)}
+.fab-i{background:linear-gradient(135deg,#0d9488,#06b6d4);color:white;box-shadow:0 8px 28px rgba(20,184,166,.35)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);z-index:200;display:none;align-items:flex-end;justify-content:center}
+.ov.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:28px 28px 0 0;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;padding:0 0 calc(40px + env(safe-area-inset-bottom));animation:sup .35s cubic-bezier(.34,1.56,.64,1)}
+.msticky-bar{position:sticky;top:0;z-index:10;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px 12px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:28px 28px 0 0}
+@keyframes sup{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mhandle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
+.mtitle{font-size:20px;font-weight:700;padding:20px 24px 6px;letter-spacing:-.3px}
+.msub{font-size:13px;color:var(--dim);padding:0 24px 20px}
+.mactions{padding:20px 20px 0;display:flex;gap:10px}
+.bcancel{flex:1;background:var(--surface2);border:1.5px solid var(--border);border-radius:16px;padding:14px;color:var(--dim);font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer}
+.bsave{flex:2;border:none;border-radius:16px;padding:14px;color:white;font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;cursor:pointer;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 4px 16px rgba(59,130,246,.3)}
+.bsave-t{background:linear-gradient(135deg,#0d9488,#06b6d4)!important;box-shadow:0 4px 16px rgba(20,184,166,.3)!important}
+.bsave:active{transform:scale(.97)}
+.divider{height:1px;background:var(--border);margin:14px 20px;opacity:.5}
+.fsec{padding:0 20px;margin-bottom:6px}
+.fsec-t{font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px;padding-left:4px}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field{background:var(--surface2);border:1.5px solid var(--border);border-radius:16px;padding:12px 14px;transition:border-color .2s}
+.field:focus-within{border-color:var(--accent)}
+.fhdr{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.ficon{width:22px;height:22px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.fname{font-size:11px;font-weight:600;color:var(--dim)}
+.frow{display:flex;align-items:baseline;gap:4px}
+.field input{background:none;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:20px;font-weight:700;width:100%;-moz-appearance:textfield}
+.field input::-webkit-outer-spin-button,.field input::-webkit-inner-spin-button{-webkit-appearance:none}
+.field input::placeholder{color:var(--border)}
+.funit{font-size:11px;font-weight:600;color:var(--dim);white-space:nowrap}
+.nfield{margin:6px 20px 0;background:var(--surface2);border:1.5px solid var(--border);border-radius:16px;padding:14px}
+.nfield:focus-within{border-color:var(--accent)}
+.nfield label{font-size:11px;font-weight:700;color:var(--dim);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:8px}
+.nfield textarea{width:100%;background:none;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:14px;resize:none;min-height:60px;line-height:1.5}
+.nfield textarea::placeholder{color:var(--border)}
+.tank-name-field{margin:0 20px 16px;background:var(--surface2);border:1.5px solid var(--border);border-radius:16px;padding:14px;transition:border-color .2s}
+.tank-name-field:focus-within{border-color:var(--accent)}
+.tank-name-field input{width:100%;background:none;border:none;outline:none;color:var(--text);font-family:'Outfit',sans-serif;font-size:18px;font-weight:600}
+.tank-name-field input::placeholder{color:var(--border)}
+.color-picker{display:flex;gap:8px;flex-wrap:wrap;padding:0 20px 16px}
+.cpick{width:32px;height:32px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:all .2s}
+.cpick.sel{border-color:white;transform:scale(1.15)}
+/* ICP Import Modal */
+.dropzone{margin:0 20px 16px;border:2px dashed var(--teal);border-radius:20px;padding:32px 20px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(20,184,166,.04);position:relative;overflow:hidden}
+.dropzone.drag{background:rgba(20,184,166,.12);border-color:var(--green)}
+.dropzone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.dicon{font-size:36px;margin-bottom:10px}
+.dtitle{font-size:15px;font-weight:700;margin-bottom:4px}
+.dsub{font-size:12px;color:var(--dim)}
+.iproc{text-align:center;padding:20px;display:none}
+.iproc.show{display:block}
+.spin{width:28px;height:28px;border:3px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 10px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.imsg{margin:0 20px 10px;border-radius:12px;padding:10px 14px;font-size:12px;line-height:1.5;display:none}
+.imsg.show{display:block}
+.imsg-ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--green)}
+.imsg-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:var(--red)}
+.iprev{margin:0 20px 14px;background:var(--surface2);border:1px solid rgba(20,184,166,.3);border-radius:16px;overflow:hidden;display:none}
+.iprev.show{display:block}
+.iprev-hdr{background:linear-gradient(135deg,rgba(20,184,166,.2),rgba(6,182,212,.1));border-bottom:1px solid var(--border);padding:10px 14px}
+.iprev-t{font-size:13px;font-weight:700;color:var(--teal)}
+.iprev-s{font-size:11px;color:var(--dim);margin-top:2px}
+.iprev-rows{padding:10px 14px;display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.ipr{display:flex;justify-content:space-between;font-size:11px;padding:2px 0}
+.ipr-n{color:var(--dim)}
+.ipr-v{font-weight:700;color:var(--text)}
+.empty{text-align:center;padding:60px 24px;color:var(--dim)}
+.empty-icon{font-size:48px;margin-bottom:16px;opacity:.5}
+.empty h3{font-size:18px;font-weight:600;margin-bottom:8px;color:var(--text)}
+.empty p{font-size:14px;line-height:1.6}
+.toast{position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);background:var(--green);color:white;padding:10px 20px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:400;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.err{background:var(--red)}
+.modal::-webkit-scrollbar{width:4px}
+.modal::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+/* ── Calculator ── */
+.calc-wrap{padding:16px 16px calc(100px + env(safe-area-inset-bottom));box-sizing:border-box;width:100%;overflow:hidden}
+.b-row{display:flex;gap:8px;width:100%}
+.b-col{flex:1;min-width:0}
+.b-col label{display:block;font-size:10px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.b-col input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:9px 10px;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;outline:none;box-sizing:border-box;-webkit-appearance:none}
+.calc-section{display:flex;flex-direction:column;gap:16px}
+.calc-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:16px;box-sizing:border-box;width:100%}
+.calc-title{font-size:16px;font-weight:700;margin-bottom:4px}
+.calc-sub{font-size:12px;color:var(--dim);margin-bottom:16px;line-height:1.5}
+.calc-fields{display:flex;flex-direction:column;gap:12px}
+.calc-field label{font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:5px}
+.calc-input-row{display:flex;gap:8px;align-items:center}
+.calc-input-row input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:10px 12px;color:var(--text);font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;outline:none;-webkit-appearance:none}
+.calc-input-row input:focus{border-color:var(--accent)}
+.calc-unit{font-size:12px;color:var(--dim);white-space:nowrap;min-width:32px}
+.calc-result{margin-top:16px;background:var(--surface2);border-radius:14px;padding:14px 16px;border:1px solid var(--border)}
+.calc-res-label{font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.calc-res-value{font-size:26px;font-weight:700;color:var(--accent2);line-height:1.1;margin-bottom:6px}
+.calc-res-alt{font-size:13px;font-weight:400;color:var(--dim)}
+.calc-res-note{font-size:11px;color:var(--dim);line-height:1.5}
+.calc-res-row{font-size:13px;font-weight:600}
+.calc-ok{color:var(--green)}
+.calc-warn{color:var(--yellow)}
+.balling-grid{display:grid;grid-template-columns:70px 1fr 1fr 1fr;gap:8px;align-items:center;margin-bottom:12px}
+.balling-param-header{font-size:11px;font-weight:700;text-align:center}
+.balling-row-label{font-size:11px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.4px}
+.balling-res-row{padding:8px 0;border-bottom:1px solid var(--border)}
+.balling-res-row:last-child{border-bottom:none}
+
+/* ── Login Screen ── */
+#loginScreen{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 32px;gap:24px}
+.login-fish{font-size:64px;animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+.login-title{font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--accent2),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}
+.login-sub{font-size:14px;color:var(--dim);text-align:center;line-height:1.6;max-width:280px}
+.login-btn{background:white;color:#1a1a1a;border:none;border-radius:16px;padding:16px 28px;font-size:16px;font-weight:700;font-family:'Outfit',sans-serif;cursor:pointer;display:flex;align-items:center;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,.3);transition:transform .15s,box-shadow .15s;width:100%;max-width:300px;justify-content:center}
+.login-btn:active{transform:scale(.97)}
+.login-google-icon{width:20px;height:20px}
+.login-note{font-size:11px;color:var(--dim);text-align:center;opacity:.7}
+/* ── User avatar in header ── */
+.user-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--accent2),var(--accent));color:white;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;font-family:'Outfit',sans-serif;position:relative}
+.user-menu{position:absolute;top:44px;right:0;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:8px;min-width:160px;box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:300;display:none}
+.user-menu.open{display:block}
+.user-menu-name{font-size:12px;font-weight:600;color:var(--dim);padding:4px 10px 8px;border-bottom:1px solid var(--border);margin-bottom:6px}
+.user-menu-item{padding:10px 12px;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;color:var(--red);display:flex;align-items:center;gap:8px}
+.user-menu-item:active{background:var(--surface2)}
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--green);position:absolute;bottom:0;right:0;border:1.5px solid var(--bg)}
+.sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+body{
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+}
+.header{
+  padding-top: calc(14px + env(safe-area-inset-top));
+  top: 0;
+}
+.fabrow{
+  bottom: calc(28px + env(safe-area-inset-bottom));
+}
+/* iOS input zoom prevention */
+input, textarea, select { font-size: 16px !important; }
+.field input { font-size: 20px !important; }
+/* PWA install banner */
+.pwa-banner{
+  position:fixed;top:0;left:0;right:0;z-index:500;
+  background:linear-gradient(135deg,#0d9488,#0ea5e9);
+  color:white;padding:14px 20px;
+  padding-top:calc(14px + env(safe-area-inset-top));
+  display:flex;align-items:center;gap:12px;
+  animation:slideDown .4s ease;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  cursor:pointer;
+}
+@keyframes slideDown{from{transform:translateY(-100%)}to{transform:translateY(0)}}
+.pwa-banner-icon{font-size:28px;flex-shrink:0}
+.pwa-banner-text{flex:1}
+.pwa-banner-title{font-size:14px;font-weight:700;margin-bottom:2px}
+.pwa-banner-sub{font-size:11px;opacity:.85;line-height:1.4}
+.pwa-banner-close{background:rgba(255,255,255,.2);border:none;color:white;width:28px;height:28px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Install guide overlay */
+.install-ov{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(12px);z-index:600;display:none;align-items:flex-end;justify-content:center}
+.install-ov.open{display:flex}
+.install-box{background:var(--surface);border:1px solid var(--border);border-radius:28px 28px 0 0;width:100%;max-width:480px;padding:0 0 calc(36px + env(safe-area-inset-bottom));animation:sup .35s cubic-bezier(.34,1.56,.64,1)}
+.install-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:12px auto 0}
+.install-title{font-size:20px;font-weight:700;padding:20px 24px 6px;background:linear-gradient(135deg,#14b8a6,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.install-sub{font-size:13px;color:var(--dim);padding:0 24px 20px;line-height:1.5}
+.install-steps{padding:0 20px;display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.install-step{display:flex;align-items:flex-start;gap:14px;background:var(--surface2);border:1px solid var(--border);border-radius:18px;padding:14px 16px}
+.install-step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:white;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.install-step-body{flex:1}
+.install-step-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.install-step-desc{font-size:12px;color:var(--dim);line-height:1.5}
+.install-step-icon{font-size:22px;flex-shrink:0;margin-top:2px}
+.install-arrow{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--teal);background:rgba(20,184,166,.1);border:1px solid rgba(20,184,166,.2);border-radius:10px;padding:4px 10px;margin-top:6px;display:inline-flex}
+.install-close{margin:0 20px;background:var(--surface2);border:1.5px solid var(--border);border-radius:16px;padding:14px;color:var(--dim);font-family:'Outfit',sans-serif;font-size:15px;font-weight:600;cursor:pointer;width:calc(100% - 40px);text-align:center}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen" style="display:flex">
+  <div class="login-fish">🐠</div>
+  <div class="login-title">Reef Tracker</div>
+  <div class="login-sub">Sign in to sync your aquarium data across all your devices.</div>
+  <button class="login-btn" id="loginBtn">
+    <svg class="login-google-icon" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+    <span id="loginBtnText">Sign in with Google</span>
+  </button>
+  <div class="login-note">Your data is securely stored in Firebase.<br>Only you have access.</div>
+  <div id="loginError" style="display:none;color:#ef4444;font-size:12px;text-align:center;padding:8px 16px;background:rgba(239,68,68,.1);border-radius:10px;margin-top:8px;max-width:280px"></div>
+</div>
+
+<!-- APP ROOT -->
+<div id="appRoot" style="display:none">
+<div class="pwa-banner" id="pwaBanner" style="display:none" onclick="openInstallGuide()">
+  <div class="pwa-banner-icon">🐠</div>
+  <div class="pwa-banner-text">
+    <div class="pwa-banner-title">Install as iPhone App</div>
+    <div class="pwa-banner-sub">Tap here for step-by-step instructions →</div>
+  </div>
+  <button class="pwa-banner-close" onclick="event.stopPropagation();dismissBanner()">✕</button>
+</div>
+
+<!-- Install Guide Modal -->
+<div class="install-ov" id="installOv" onclick="if(event.target===this)closeInstallGuide()">
+  <div class="install-box">
+    <div class="install-handle"></div>
+    <div class="install-title">📲 Install App</div>
+    <div class="install-sub">Add Reef Tracker to your iPhone home screen — works like a native app, free and without the App Store.</div>
+    <div class="install-steps">
+      <div class="install-step">
+        <div class="install-step-num">1</div>
+        <div class="install-step-body">
+          <div class="install-step-title">Open Safari</div>
+          <div class="install-step-desc">This page must be open in <strong style="color:var(--text)">Safari</strong> — Chrome and other browsers do not support installation.</div>
+        </div>
+        <div class="install-step-icon">🧭</div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">2</div>
+        <div class="install-step-body">
+          <div class="install-step-title">Tap the Share button</div>
+          <div class="install-step-desc">At the bottom of Safari, tap the <strong style="color:var(--text)">Share icon</strong> (square with an arrow pointing up).</div>
+          <div class="install-arrow">□↑ Share</div>
+        </div>
+        <div class="install-step-icon">📤</div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">3</div>
+        <div class="install-step-body">
+          <div class="install-step-title">"Add to Home Screen"</div>
+          <div class="install-step-desc">Scroll down and tap <strong style="color:var(--text)">"Add to Home Screen"</strong>.</div>
+          <div class="install-arrow">＋ Add to Home Screen</div>
+        </div>
+        <div class="install-step-icon">🏠</div>
+      </div>
+      <div class="install-step">
+        <div class="install-step-num">4</div>
+        <div class="install-step-body">
+          <div class="install-step-title">Confirm "Add"</div>
+          <div class="install-step-desc">Optionally edit the name, then tap <strong style="color:var(--text)">"Add"</strong> in the top right. Done! 🎉</div>
+        </div>
+        <div class="install-step-icon">✅</div>
+      </div>
+    </div>
+    <button class="install-close" onclick="closeInstallGuide()">Close</button>
+  </div>
+</div>
+
+<div class="header">
+  <div style="display:flex;align-items:center;gap:10px">
+    <span style="font-size:22px">🐠</span>
+    <h1>Reef Tracker</h1>
+  </div>
+  <div class="hbtns">
+    <div class="hbtn hbtn-icp" onclick="openIcpModal()">🧬 ICP</div>
+    <div class="hbtn" onclick="openTankEdit()" title="Edit tank" style="font-size:15px">⚙️</div>
+    <div style="position:relative">
+      <button class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">👤<div class="sync-dot" id="syncDot"></div></button>
+      <div class="user-menu" id="userMenu">
+        <div class="user-menu-name" id="userMenuName">Signed in</div>
+        <div class="user-menu-item" onclick="doLogout()">🚪 Sign out</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tanks-wrap">
+  <div class="tanks" id="tabsRow"></div>
+</div>
+
+<div class="view-toggle">
+  <div class="vtab active" id="vt-log" onclick="setView('log')">📋 Log</div>
+  <div class="vtab" id="vt-chart" onclick="setView('chart')">📈 Charts</div>
+  <div class="vtab" id="vt-dose" onclick="setView('dose')">💊 Dosing</div>
+  <div class="vtab" id="vt-calc" onclick="setView('calc')">🧂 Salt Calc</div>
+  <div class="vtab" id="vt-balling" onclick="setView('balling')">⚗️ Balling</div>
+  <div class="vtab" id="vt-remind" onclick="setView('remind')">🔔 Reminders</div>
+</div>
+
+<div id="logView"><div class="content" id="content"></div></div>
+<div id="chartView" style="display:none"><div class="chart-view" id="chartContent"></div></div>
+<div id="doseView" style="display:none"><div class="calc-wrap" id="doseContent"></div></div>
+<div id="calcView" style="display:none"><div class="calc-wrap" id="calcContent"></div></div>
+<div id="ballingView" style="display:none"><div class="calc-wrap" id="ballingContent"></div></div>
+<div id="remindView" style="display:none"><div class="calc-wrap" id="remindContent"></div></div>
+
+<div class="fabrow">
+  <button class="fab fab-i" onclick="openIcpModal()">🧬 ICP</button>
+  <button class="fab fab-m" onclick="openMeasModal()">＋ Add</button>
+</div>
+
+<!-- MEASUREMENT MODAL -->
+<div class="ov" id="ovM" onclick="if(event.target===this)closeMeasModal()">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="msticky-bar">
+      <div>
+        <div class="mtitle" id="measTitle" style="padding:0;font-size:18px">New Measurement</div>
+        <input type="datetime-local" id="f-datetime" style="background:none;border:none;outline:none;color:var(--dim);font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;color-scheme:dark;margin-top:2px">
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="bcancel" onclick="closeMeasModal()" style="margin:0;padding:8px 14px;font-size:13px">✕</button>
+        <button class="bsave" onclick="saveMeasurement()" style="margin:0;padding:8px 18px;font-size:13px">Save</button>
+      </div>
+    </div>
+    <div class="fsec"><div class="fsec-t">Core Parameters</div><div class="fgrid">
+      <div class="field"><div class="fhdr"><div class="ficon" style="background:rgba(6,182,212,.15);color:var(--accent2)">🧂</div><span class="fname">Salinity</span></div><div class="frow"><input type="number" id="f-sal" placeholder="35" step="0.1"><span class="funit">PSU</span></div></div>
+      <div class="field"><div class="fhdr"><div class="ficon" style="background:rgba(249,115,22,.15);color:var(--orange)">🌡️</div><span class="fname">Temperature</span></div><div class="frow"><input type="number" id="f-temp" placeholder="25" step="0.1"><span class="funit">°C</span></div></div>
+      <div class="field"><div class="fhdr"><div class="ficon" style="background:rgba(168,85,247,.15);color:var(--purple)">💧</div><span class="fname">Alkalinity (KH)</span></div><div class="frow"><input type="number" id="f-kh" placeholder="7" step="0.1"><span class="funit">dKH</span></div></div>
+      <div class="field"><div class="fhdr"><div class="ficon" style="background:rgba(34,197,94,.15);color:var(--green)">⚗️</div><span class="fname">pH</span></div><div class="frow"><input type="number" id="f-ph" placeholder="8.2" step="0.01"></div></div>
+    </div></div>
+    <div class="divider"></div>
+    <div class="fsec"><div class="fsec-t">Macroelements &amp; Halogens — mg/l</div><div class="fgrid">
+      <div class="field"><div class="fhdr"><span class="fname">Calcium (Ca)</span></div><div class="frow"><input type="number" id="f-ca" placeholder="420"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Magnesium (Mg)</span></div><div class="frow"><input type="number" id="f-mg" placeholder="1280"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Sodium (Na)</span></div><div class="frow"><input type="number" id="f-na" placeholder="10800"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Potassium (K)</span></div><div class="frow"><input type="number" id="f-k" placeholder="390"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Strontium (Sr)</span></div><div class="frow"><input type="number" id="f-sr" placeholder="7.5" step="0.01"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Boron (B)</span></div><div class="frow"><input type="number" id="f-b" placeholder="4.5" step="0.01"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Bromine (Br)</span></div><div class="frow"><input type="number" id="f-br" placeholder="65" step="0.1"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Fluoride (F)</span></div><div class="frow"><input type="number" id="f-fl" placeholder="1.2" step="0.01"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Iodine (I)</span></div><div class="frow"><input type="number" id="f-iod" placeholder="0.06" step="0.001"><span class="funit">mg/l</span></div></div>
+    </div></div>
+    <div class="divider"></div>
+    <div class="fsec"><div class="fsec-t">Nutrients — mg/l</div><div class="fgrid">
+      <div class="field"><div class="fhdr"><span class="fname">Nitrate (NO₃)</span></div><div class="frow"><input type="number" id="f-no3" placeholder="5" step="0.1"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Nitrite (NO₂)</span></div><div class="frow"><input type="number" id="f-no2" placeholder="0" step="0.01"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Phosphate (PO₄)</span></div><div class="frow"><input type="number" id="f-po4" placeholder="0.02" step="0.001"><span class="funit">mg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Silicate (SiO₂)</span></div><div class="frow"><input type="number" id="f-si" placeholder="0.3" step="0.01"><span class="funit">mg/l</span></div></div>
+    </div></div>
+    <div class="divider"></div>
+    <div class="fsec"><div class="fsec-t">Dynamic Elements — µg/l</div><div class="fgrid">
+      <div class="field"><div class="fhdr"><span class="fname">Zinc (Zn)</span></div><div class="frow"><input type="number" id="f-zn" placeholder="5" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Vanadium (V)</span></div><div class="frow"><input type="number" id="f-v" placeholder="5" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Copper (Cu)</span></div><div class="frow"><input type="number" id="f-cu" placeholder="3" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Nickel (Ni)</span></div><div class="frow"><input type="number" id="f-ni" placeholder="4" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Molybdenum (Mo)</span></div><div class="frow"><input type="number" id="f-mo" placeholder="14" step="0.1"><span class="funit">µg/l</span></div></div>
+    </div></div>
+    <div class="divider"></div>
+    <div class="fsec"><div class="fsec-t">Trace &amp; Pollutants — µg/l</div><div class="fgrid">
+      <div class="field"><div class="fhdr"><span class="fname">Barium (Ba)</span></div><div class="frow"><input type="number" id="f-ba" placeholder="20" step="0.1"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Iron (Fe)</span></div><div class="frow"><input type="number" id="f-fe" placeholder="1" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Lithium (Li)</span></div><div class="frow"><input type="number" id="f-li" placeholder="200" step="1"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Cobalt (Co)</span></div><div class="frow"><input type="number" id="f-co" placeholder="0.5" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Chromium (Cr)</span></div><div class="frow"><input type="number" id="f-cr" placeholder="0.5" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Manganese (Mn)</span></div><div class="frow"><input type="number" id="f-mn" placeholder="0.1" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Selenium (Se)</span></div><div class="frow"><input type="number" id="f-se" placeholder="0.5" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Aluminium (Al)</span></div><div class="frow"><input type="number" id="f-al" placeholder="15" step="0.1"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Tin (Sn)</span></div><div class="frow"><input type="number" id="f-sn" placeholder="3" step="0.1"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Antimony (Sb)</span></div><div class="frow"><input type="number" id="f-sb" placeholder="0" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Arsenic (As)</span></div><div class="frow"><input type="number" id="f-as" placeholder="0" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Lead (Pb)</span></div><div class="frow"><input type="number" id="f-pb" placeholder="0" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Cadmium (Cd)</span></div><div class="frow"><input type="number" id="f-cd" placeholder="0" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Lanthanum (La)</span></div><div class="frow"><input type="number" id="f-la" placeholder="5" step="0.1"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Mercury (Hg)</span></div><div class="frow"><input type="number" id="f-hg" placeholder="0" step="0.001"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Silver (Ag)</span></div><div class="frow"><input type="number" id="f-ag" placeholder="0" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Titanium (Ti)</span></div><div class="frow"><input type="number" id="f-ti" placeholder="0" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Tungsten (W)</span></div><div class="frow"><input type="number" id="f-w" placeholder="0" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Zirconium (Zr)</span></div><div class="frow"><input type="number" id="f-zr" placeholder="0" step="0.01"><span class="funit">µg/l</span></div></div>
+      <div class="field"><div class="fhdr"><span class="fname">Beryllium (Be)</span></div><div class="frow"><input type="number" id="f-be" placeholder="0" step="0.001"><span class="funit">µg/l</span></div></div>
+    </div></div>
+    <div class="nfield"><label>Notes</label><textarea id="f-note" placeholder="e.g. Water change, coral feeding, dosing..."></textarea></div>
+  </div>
+</div>
+
+<!-- ICP IMPORT MODAL -->
+<div class="ov" id="ovI" onclick="if(event.target===this)closeIcpModal()">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle">🧬 ICP Import</div>
+    <div class="msub">Import Fauna Marin REEF ICP TOTAL PDF</div>
+    <div class="dropzone" id="dz" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleDrop(event)">
+      <input type="file" id="icpFile" accept=".pdf" onchange="handleFile(event)">
+      <div class="dicon">📄</div>
+      <div class="dtitle">Drop PDF here or tap to browse</div>
+      <div class="dsub">Fauna Marin REEF ICP TOTAL</div>
+    </div>
+    <div class="iproc" id="iproc"><div class="spin"></div><div style="font-size:13px;color:var(--dim)">Reading PDF...</div></div>
+    <div class="imsg" id="imsg"></div>
+    <div class="iprev" id="iprev">
+      <div class="iprev-hdr"><div class="iprev-t" id="iprev-t"></div><div class="iprev-s" id="iprev-s"></div></div>
+      <div class="iprev-rows" id="iprev-rows"></div>
+    </div>
+    <div class="mactions">
+      <button class="bcancel" onclick="closeIcpModal()">Cancel</button>
+      <button class="bsave bsave-t" id="icpSaveBtn" onclick="saveIcpEntry()" style="display:none">💾 Save to Tank</button>
+    </div>
+  </div>
+</div>
+
+<!-- TANK MODAL -->
+<div class="ov" id="ovT" onclick="if(event.target===this)closeTankModal()">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="tankModalTitle">New Aquarium</div>
+    <div class="msub">Give your tank a name and color</div>
+    <div class="tank-name-field"><input type="text" id="tank-name" placeholder="e.g. Main Reef, Frag Tank..." maxlength="32"></div>
+    <div class="color-picker" id="colorPicker"></div>
+    <div class="mactions">
+      <button class="bcancel" id="tankDeleteBtn" onclick="deleteTank()" style="display:none;background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:var(--red)">Delete</button>
+      <button class="bcancel" onclick="closeTankModal()">Cancel</button>
+      <button class="bsave" onclick="saveTank()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirmation modal -->
+<div class="ov" id="ovDel" onclick="if(event.target===this)closeDeleteModal()">
+  <div class="modal">
+    <div class="mhandle"></div>
+    <div class="mtitle" style="color:var(--red)">⚠️ Delete Tank</div>
+    <div class="msub" id="delModalSub">This tank has measurements. Type the tank name to confirm deletion.</div>
+    <div style="margin:16px 0 8px;font-size:12px;font-weight:600;color:var(--dim);text-transform:uppercase;letter-spacing:.5px">Type <span id="delTankNameHint" style="color:var(--text);font-style:italic"></span> to confirm</div>
+    <div class="tank-name-field"><input type="text" id="del-confirm-input" placeholder="Tank name..." autocomplete="off" oninput="checkDeleteInput()"></div>
+    <div class="mactions" style="margin-top:16px">
+      <button class="bcancel" onclick="closeDeleteModal()">Cancel</button>
+      <button id="delConfirmBtn" onclick="confirmDeleteTank()" disabled style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:var(--red);padding:11px 20px;border-radius:14px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;opacity:.4;transition:all .2s">Delete forever</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+</div><!-- /#appRoot -->
+
+<script>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const SK = 'reef_tracker_v3';
+const TANK_COLORS = ['#3b82f6','#06b6d4','#14b8a6','#22c55e','#a855f7','#f97316','#ef4444','#eab308','#6366f1','#ec4899'];
+
+const REFS = {
+  sal:{lo:34,hi:36},temp:{lo:23,hi:26},kh:{lo:6.5,hi:8.5},ph:{lo:7.9,hi:8.4},
+  ca:{lo:400,hi:450},mg:{lo:1200,hi:1450},na:{lo:9500,hi:11500},k:{lo:380,hi:420},
+  sr:{lo:6.5,hi:9},b:{lo:3.8,hi:5.5},br:{lo:55,hi:75},fl:{lo:0.9,hi:1.6},iod:{lo:0.055,hi:0.08},
+  no3:{lo:1,hi:10},no2:{lo:0,hi:0.15},po4:{lo:0.02,hi:0.1},si:{lo:0.2,hi:0.4},
+  zn:{lo:3,hi:8},v:{lo:2,hi:10},cu:{lo:2,hi:6},ni:{lo:3,hi:6},mo:{lo:10,hi:20},
+  ba:{lo:5,hi:50},fe:{lo:0,hi:2.5},li:{lo:180,hi:350},co:{lo:0,hi:1.9},cr:{lo:0,hi:2.3},
+  mn:{lo:0,hi:0.25},se:{lo:0,hi:2},al:{lo:5,hi:30},sn:{lo:0,hi:10},
+  sb:{lo:0,hi:10},as:{lo:0,hi:0},pb:{lo:0,hi:0},cd:{lo:0,hi:0},la:{lo:2,hi:10},
+  hg:{lo:0,hi:0},ag:{lo:0,hi:10},ti:{lo:0,hi:3.5},w:{lo:0,hi:30},zr:{lo:0,hi:2.2},be:{lo:0,hi:0},
+};
+const UNITS = {
+  sal:'PSU',temp:'°C',kh:'dKH',ph:'',ca:'mg/l',mg:'mg/l',na:'mg/l',k:'mg/l',
+  sr:'mg/l',b:'mg/l',br:'mg/l',fl:'mg/l',iod:'mg/l',no3:'mg/l',no2:'mg/l',po4:'mg/l',si:'mg/l',
+  zn:'µg/l',v:'µg/l',cu:'µg/l',ni:'µg/l',mo:'µg/l',ba:'µg/l',fe:'µg/l',li:'µg/l',
+  co:'µg/l',cr:'µg/l',mn:'µg/l',se:'µg/l',al:'µg/l',sn:'µg/l',sb:'µg/l',as:'µg/l',
+  pb:'µg/l',cd:'µg/l',la:'µg/l',hg:'µg/l',ag:'µg/l',ti:'µg/l',w:'µg/l',zr:'µg/l',be:'µg/l',
+};
+const FULL_NAMES = {
+  sal:'Salinity',temp:'Temperature',kh:'Alkalinity (KH)',ph:'pH',
+  ca:'Calcium (Ca)',mg:'Magnesium (Mg)',na:'Sodium (Na)',k:'Potassium (K)',
+  sr:'Strontium (Sr)',b:'Boron (B)',br:'Bromine (Br)',fl:'Fluoride (F)',iod:'Iodine (I)',
+  no3:'Nitrate (NO₃)',no2:'Nitrite (NO₂)',po4:'Phosphate (PO₄)',si:'Silicate (SiO₂)',
+  zn:'Zinc (Zn)',v:'Vanadium (V)',cu:'Copper (Cu)',ni:'Nickel (Ni)',mo:'Molybdenum (Mo)',
+  ba:'Barium (Ba)',co:'Cobalt (Co)',cr:'Chromium (Cr)',fe:'Iron (Fe)',li:'Lithium (Li)',
+  mn:'Manganese (Mn)',se:'Selenium (Se)',al:'Aluminium (Al)',sn:'Tin (Sn)',
+  sb:'Antimony (Sb)',as:'Arsenic (As)',be:'Beryllium (Be)',pb:'Lead (Pb)',cd:'Cadmium (Cd)',
+  la:'Lanthanum (La)',hg:'Mercury (Hg)',ag:'Silver (Ag)',ti:'Titanium (Ti)',
+  w:'Tungsten (W)',zr:'Zirconium (Zr)',
+};
+const GAUGE_SECTIONS = [
+  {title:'Core',cols:[
+    {id:'sal',label:'Salinity',unit:'PSU',min:30,max:40,ideal:[33,37]},
+    {id:'temp',label:'Temp',unit:'°C',min:20,max:30,ideal:[23,26]},
+    {id:'kh',label:'KH',unit:'dKH',min:5,max:12,ideal:[6,9]},
+    {id:'ph',label:'pH',unit:'',min:7.5,max:8.6,ideal:[7.9,8.4]},
+  ]},
+  {title:'Macroelements & Halogens',cols:[
+    {id:'ca',label:'Ca',unit:'mg/l',min:300,max:500,ideal:[400,450]},
+    {id:'mg',label:'Mg',unit:'mg/l',min:1000,max:1800,ideal:[1200,1450]},
+    {id:'na',label:'Na',unit:'mg/l',min:8000,max:13000,ideal:[9500,11500]},
+    {id:'k',label:'K',unit:'mg/l',min:300,max:500,ideal:[380,420]},
+    {id:'sr',label:'Sr',unit:'mg/l',min:4,max:12,ideal:[6.5,9]},
+    {id:'b',label:'B',unit:'mg/l',min:2,max:7,ideal:[3.8,5.5]},
+    {id:'br',label:'Br',unit:'mg/l',min:40,max:90,ideal:[55,75]},
+    {id:'fl',label:'F',unit:'mg/l',min:0.5,max:2.5,ideal:[0.9,1.6]},
+    {id:'iod',label:'I',unit:'mg/l',min:0,max:0.2,ideal:[0.055,0.08]},
+  ]},
+  {title:'Nutrients',cols:[
+    {id:'no3',label:'NO\u2083',unit:'mg/l',min:0,max:50,ideal:[1,10]},
+    {id:'no2',label:'NO\u2082',unit:'mg/l',min:0,max:0.5,ideal:[0,0.15]},
+    {id:'po4',label:'PO\u2084',unit:'mg/l',min:0,max:1,ideal:[0.01,0.1]},
+    {id:'si',label:'SiO\u2082',unit:'mg/l',min:0,max:1,ideal:[0.2,0.4]},
+  ]},
+  {title:'Dynamic Elements',cols:[
+    {id:'zn',label:'Zn',unit:'µg/l',min:0,max:15,ideal:[3,8]},
+    {id:'v',label:'V',unit:'µg/l',min:0,max:15,ideal:[2,10]},
+    {id:'cu',label:'Cu',unit:'µg/l',min:0,max:10,ideal:[2,6]},
+    {id:'ni',label:'Ni',unit:'µg/l',min:0,max:10,ideal:[3,6]},
+    {id:'mo',label:'Mo',unit:'µg/l',min:0,max:30,ideal:[10,20]},
+  ]},
+  {title:'Trace Elements',cols:[
+    {id:'ba',label:'Ba',unit:'µg/l',min:0,max:80,ideal:[5,50]},
+    {id:'co',label:'Co',unit:'µg/l',min:0,max:3,ideal:[0,1.9]},
+    {id:'cr',label:'Cr',unit:'µg/l',min:0,max:4,ideal:[0,2.3]},
+    {id:'fe',label:'Fe',unit:'µg/l',min:0,max:4,ideal:[0,2.5]},
+    {id:'li',label:'Li',unit:'µg/l',min:0,max:500,ideal:[180,350]},
+    {id:'mn',label:'Mn',unit:'µg/l',min:0,max:0.5,ideal:[0,0.25]},
+    {id:'se',label:'Se',unit:'µg/l',min:0,max:3,ideal:[0,2]},
+  ]},
+  {title:'Pollutants & Other',cols:[
+    {id:'al',label:'Al',unit:'µg/l',min:0,max:50,ideal:[5,30]},
+    {id:'sn',label:'Sn',unit:'µg/l',min:0,max:15,ideal:[0,10]},
+    {id:'sb',label:'Sb',unit:'µg/l',min:0,max:15,ideal:[0,10]},
+    {id:'as',label:'As',unit:'µg/l',min:0,max:5,ideal:[0,0]},
+    {id:'be',label:'Be',unit:'µg/l',min:0,max:1,ideal:[0,0]},
+    {id:'pb',label:'Pb',unit:'µg/l',min:0,max:5,ideal:[0,0]},
+    {id:'cd',label:'Cd',unit:'µg/l',min:0,max:2,ideal:[0,0]},
+    {id:'la',label:'La',unit:'µg/l',min:0,max:15,ideal:[2,10]},
+    {id:'hg',label:'Hg',unit:'µg/l',min:0,max:1,ideal:[0,0]},
+    {id:'ag',label:'Ag',unit:'µg/l',min:0,max:15,ideal:[0,10]},
+    {id:'ti',label:'Ti',unit:'µg/l',min:0,max:6,ideal:[0,3.5]},
+    {id:'w',label:'W',unit:'µg/l',min:0,max:50,ideal:[0,30]},
+    {id:'zr',label:'Zr',unit:'µg/l',min:0,max:4,ideal:[0,2.2]},
+  ]},
+];
+const ALL_FIELDS = GAUGE_SECTIONS.flatMap(function(s){ return s.cols.map(function(c){ return c.id; }); });
+
+// ── State ─────────────────────────────────────────────────────
+var state = {tanks:[], activeTank:null};
+var editMeasId = null;
+var editTankId = null;
+var selectedColor = TANK_COLORS[0];
+var pendingDeleteId = null;
+var currentView = 'log';
+var activeChartParams = {};
+var chartInstances = {};
+var chartsBuilt = false;
+var icpParsed = null;
+
+// ── Storage — Firebase replaces localStorage ──────────────────
+function loadState() {
+  // Load from localStorage immediately so UI isn't blank while waiting for Firestore
+  var local = null;
+  try { local = JSON.parse(localStorage.getItem('reef_tracker_v3')); } catch(e){}
+  if (!local) try { local = JSON.parse(localStorage.getItem('reef_tracker_v2')); } catch(e){}
+  if (local && local.tanks && local.tanks.length) {
+    state = local;
+  } else {
+    state = { tanks: [], activeTank: null };
+  }
+}
+function saveState() {
+  // Always save to localStorage immediately — this is the source of truth
+  try { localStorage.setItem('reef_tracker_v3', JSON.stringify(state)); } catch(e){}
+  // Also save to Firestore if logged in
+  if (window.fbSaveState) {
+    var dot = document.getElementById('syncDot');
+    if (dot) dot.className = 'sync-dot syncing';
+    window.fbSaveState().then(function(){
+      if (dot) dot.className = 'sync-dot';
+    });
+  }
+}
+function createDefaultTank() {
+  var t = {id:uid(), name:'My Reef', color:TANK_COLORS[0], measurements:[]};
+  state.tanks = [t]; state.activeTank = t.id; saveState();
+}
+function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function getActiveTank() { return state.tanks.find(function(t){ return t.id===state.activeTank; }); }
+
+// ── Tabs ──────────────────────────────────────────────────────
+function renderTabs() {
+  document.getElementById('tabsRow').innerHTML = state.tanks.map(function(t) {
+    return '<div class="tab'+(t.id===state.activeTank?' active':'')+'" onclick="switchTank(\''+t.id+'\')">'
+      +'<div class="tdot" style="background:'+t.color+'"></div>'+escHtml(t.name)+'</div>';
+  }).join('')+'<div class="tab tab-add" onclick="openNewTank()">＋</div>';
+}
+function switchTank(id) {
+  state.activeTank = id; saveState(); renderTabs();
+  if (currentView==='chart') { destroyCharts(); chartsBuilt=false; renderCharts(); chartsBuilt=true; }
+  else if (currentView==='log') renderLog();
+  else if (currentView==='balling') renderBalling();
+}
+
+// ── View toggle ───────────────────────────────────────────────
+function setView(v) {
+  currentView = v;
+  document.getElementById('vt-log').className='vtab'+(v==='log'?' active':'');
+  document.getElementById('vt-chart').className='vtab'+(v==='chart'?' active':'');
+  document.getElementById('vt-dose').className='vtab'+(v==='dose'?' active':'');
+  document.getElementById('vt-calc').className='vtab'+(v==='calc'?' active':'');
+  document.getElementById('vt-balling').className='vtab'+(v==='balling'?' active':'');
+  document.getElementById('vt-remind').className='vtab'+(v==='remind'?' active':'');
+  document.getElementById('logView').style.display     = v==='log'?'block':'none';
+  document.getElementById('chartView').style.display   = v==='chart'?'block':'none';
+  document.getElementById('doseView').style.display    = v==='dose'?'block':'none';
+  document.getElementById('calcView').style.display    = v==='calc'?'block':'none';
+  document.getElementById('ballingView').style.display = v==='balling'?'block':'none';
+  document.getElementById('remindView').style.display  = v==='remind'?'block':'none';
+  document.querySelector('.fabrow').style.display = (v==='calc'||v==='balling'||v==='remind'||v==='dose')?'none':'flex';
+  if (v==='chart') { if (!chartsBuilt) { renderCharts(); chartsBuilt=true; } }
+  else if (v==='dose') renderDose();
+  else if (v==='calc') renderCalc();
+  else if (v==='balling') renderBalling();
+  else if (v==='remind') renderReminders();
+  else renderLog();
+}
+
+// ── Calculator ────────────────────────────────────────────────
+function renderCalc() {
+  document.getElementById('calcContent').innerHTML = `
+  <div class="calc-section">
+    <div class="calc-card">
+      <div class="calc-title">🧂 Salt Calculator</div>
+      <div class="calc-sub">How much salt do you need to reach your target salinity?</div>
+      <div class="calc-fields">
+        <div class="calc-field">
+          <label>Current salinity (IS)</label>
+          <div class="calc-input-row"><input type="number" id="c-sal-is" placeholder="33.0" step="0.1" min="0" max="45" oninput="calcSalt()"><span class="calc-unit">PSU</span></div>
+        </div>
+        <div class="calc-field">
+          <label>Target salinity (SHOULD)</label>
+          <div class="calc-input-row"><input type="number" id="c-sal-should" placeholder="35.0" step="0.1" min="0" max="45" oninput="calcSalt()"><span class="calc-unit">PSU</span></div>
+        </div>
+        <div class="calc-field">
+          <label>Water volume</label>
+          <div class="calc-input-row">
+            <input type="number" id="c-vol" placeholder="300" step="1" min="0" oninput="calcSalt()">
+            <select id="c-vol-unit" onchange="calcSalt()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:14px;outline:none">
+              <option value="l">Liters (l)</option>
+              <option value="gal">Gallons (gal)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="calc-salt-result" class="calc-result" style="display:none"></div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-title">💧 Water Change Calculator</div>
+      <div class="calc-sub">How much water to change to reach target salinity?</div>
+      <div class="calc-fields">
+        <div class="calc-field">
+          <label>Current salinity</label>
+          <div class="calc-input-row"><input type="number" id="c-wc-current" placeholder="36.0" step="0.1" min="0" max="45" oninput="calcWaterChange()"><span class="calc-unit">PSU</span></div>
+        </div>
+        <div class="calc-field">
+          <label>Target salinity</label>
+          <div class="calc-input-row"><input type="number" id="c-wc-target" placeholder="35.0" step="0.1" min="0" max="45" oninput="calcWaterChange()"><span class="calc-unit">PSU</span></div>
+        </div>
+        <div class="calc-field">
+          <label>Replacement water salinity</label>
+          <div class="calc-input-row"><input type="number" id="c-wc-new" placeholder="35.0" step="0.1" min="0" max="45" oninput="calcWaterChange()"><span class="calc-unit">PSU</span></div>
+        </div>
+        <div class="calc-field">
+          <label>Tank volume</label>
+          <div class="calc-input-row">
+            <input type="number" id="c-wc-vol" placeholder="300" step="1" min="0" oninput="calcWaterChange()">
+            <select id="c-wc-vol-unit" onchange="calcWaterChange()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:14px;outline:none">
+              <option value="l">Liters (l)</option>
+              <option value="gal">Gallons (gal)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div id="calc-wc-result" class="calc-result" style="display:none"></div>
+    </div>
+
+    <div class="calc-card">
+      <div class="calc-title">📐 Refractometer Correction</div>
+      <div class="calc-sub">Convert refractometer reading to true salinity (seawater calibration).</div>
+      <div class="calc-fields">
+        <div class="calc-field">
+          <label>Refractometer reading</label>
+          <div class="calc-input-row"><input type="number" id="c-ref-read" placeholder="35.0" step="0.1" min="0" max="50" oninput="calcRefractometer()"><span class="calc-unit">PSU</span></div>
+        </div>
+        <div class="calc-field">
+          <label>Calibration (usually 0 = freshwater cal.)</label>
+          <div class="calc-input-row"><input type="number" id="c-ref-cal" placeholder="0" step="0.1" oninput="calcRefractometer()"><span class="calc-unit">offset</span></div>
+        </div>
+      </div>
+      <div id="calc-ref-result" class="calc-result" style="display:none"></div>
+    </div>
+  </div>`;
+}
+
+function calcSalt() {
+  var is_sal = parseFloat(document.getElementById('c-sal-is').value);
+  var should = parseFloat(document.getElementById('c-sal-should').value);
+  var vol    = parseFloat(document.getElementById('c-vol').value);
+  var unit   = document.getElementById('c-vol-unit').value;
+  var res    = document.getElementById('calc-salt-result');
+  if (isNaN(is_sal) || isNaN(should) || isNaN(vol) || vol <= 0) { res.style.display='none'; return; }
+  // Convert to liters
+  var vol_l = unit === 'gal' ? vol * 3.78541 : vol;
+  var diff  = should - is_sal;
+  // Tropic Marin formula: 1.1143 g per liter per PSU (empirical, matches their calculator exactly)
+  var salt_g = vol_l * diff * 1.1143;
+  res.style.display = 'block';
+  if (diff === 0) {
+    res.innerHTML = '<div class="calc-res-row calc-ok">✓ Salinity is already at target.</div>';
+  } else if (diff > 0) {
+    res.innerHTML = `<div class="calc-res-label">Salt to add</div>
+      <div class="calc-res-value">${Math.round(salt_g)} g <span class="calc-res-alt">= ${(salt_g/1000).toFixed(3)} kg</span></div>
+      <div class="calc-res-note">Add salt slowly and allow to dissolve fully before measuring again.</div>`;
+  } else {
+    var water_to_add_l = vol_l * (-diff) / should;
+    var water_gal = (water_to_add_l / 3.78541).toFixed(2);
+    res.innerHTML = `<div class="calc-res-label">Salinity is too high — add fresh water</div>
+      <div class="calc-res-value">${water_to_add_l.toFixed(1)} l <span class="calc-res-alt">= ${water_gal.toFixed(2)} gal</span></div>
+      <div class="calc-res-note">Add RO/DI water slowly and remix before re-measuring.</div>`;
+  }
+}
+
+function calcWaterChange() {
+  var cur  = parseFloat(document.getElementById('c-wc-current').value);
+  var tgt  = parseFloat(document.getElementById('c-wc-target').value);
+  var rep  = parseFloat(document.getElementById('c-wc-new').value);
+  var vol  = parseFloat(document.getElementById('c-wc-vol').value);
+  var unit = document.getElementById('c-wc-vol-unit').value;
+  var res  = document.getElementById('calc-wc-result');
+  if (isNaN(cur)||isNaN(tgt)||isNaN(rep)||isNaN(vol)||vol<=0) { res.style.display='none'; return; }
+  var vol_l = unit === 'gal' ? vol * 3.78541 : vol;
+  if (Math.abs(rep - cur) < 0.01) { res.style.display='block'; res.innerHTML='<div class="calc-res-row calc-warn">⚠️ Current and replacement salinity are the same — no change possible.</div>'; return; }
+  // Formula: wc_vol = tank_vol * (cur - tgt) / (cur - rep)
+  var wc_l = vol_l * (cur - tgt) / (cur - rep);
+  if (wc_l < 0) { res.style.display='block'; res.innerHTML='<div class="calc-res-row calc-warn">⚠️ Check values — result is negative.</div>'; return; }
+  var wc_pct = (wc_l / vol_l * 100).toFixed(1);
+  var wc_gal = (wc_l / 3.78541).toFixed(2);
+  res.style.display = 'block';
+  res.innerHTML = `<div class="calc-res-label">Water to replace</div>
+    <div class="calc-res-value">${wc_l.toFixed(1)} l <span class="calc-res-alt">= ${wc_gal} gal (${wc_pct}%)</span></div>
+    <div class="calc-res-note">Remove ${wc_l.toFixed(1)} l and replace with water at ${rep} PSU.</div>`;
+}
+
+function calcRefractometer() {
+  var read = parseFloat(document.getElementById('c-ref-read').value);
+  var cal  = parseFloat(document.getElementById('c-ref-cal').value) || 0;
+  var res  = document.getElementById('calc-ref-result');
+  if (isNaN(read)) { res.style.display='none'; return; }
+  // Correction factor for seawater vs freshwater calibration: multiply by 1.026 / 1.000 ≈ 0.97
+  // Standard formula: true_psu = (read + cal) * 0.9695
+  var corrected = (read + cal) * 0.9695;
+  var diff = corrected - read;
+  res.style.display = 'block';
+  res.innerHTML = `<div class="calc-res-label">True salinity (corrected)</div>
+    <div class="calc-res-value">${corrected.toFixed(1)} PSU <span class="calc-res-alt">(${diff >= 0 ? '+' : ''}${diff.toFixed(1)} correction)</span></div>
+    <div class="calc-res-note">Most refractometers are calibrated for freshwater (ATC). This applies the standard seawater correction factor of 0.9695.</div>`;
+}
+
+// ── Balling Light Calculator ──────────────────────────────────
+function renderBalling() {
+  // Pre-fill from latest measurement of active tank
+  var tank = getActiveTank();
+  var latest = tank && tank.measurements && tank.measurements.length ? tank.measurements[0] : null;
+  var ca_is  = latest && latest.ca  != null ? latest.ca  : '';
+  var mg_is  = latest && latest.mg  != null ? latest.mg  : '';
+  var kh_is  = latest && latest.kh  != null ? latest.kh  : '';
+
+  document.getElementById('ballingContent').innerHTML = `
+  <div class="calc-wrap" style="padding-top:0">
+  <div class="calc-section">
+    <div class="calc-card">
+      <div class="calc-title">⚗️ Balling Light Calculator</div>
+      <div class="calc-sub">Based on Fauna Marin Balling Light dosing rates:<br>
+        <strong style="color:#ea6c1c">Ca:</strong> 10 ml/100L → +11 mg/L<br>
+        <strong style="color:#d63384">Mg:</strong> 10 ml/100L → +5 mg/L<br>
+        <strong style="color:#783cb4">KH:</strong> 10 ml/100L → +0.5 dKH
+      </div>
+
+      <div style="margin-bottom:14px">
+        <div class="calc-field" style="margin-bottom:8px"><label>Tank volume</label>
+          <div class="calc-input-row">
+            <input type="number" id="b-vol" placeholder="300" step="1" min="0" oninput="calcBalling()">
+            <select id="b-vol-unit" onchange="calcBalling()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:14px;outline:none">
+              <option value="l">Liters (l)</option>
+              <option value="gal">Gallons (gal)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+
+        <div style="background:var(--surface2);border:1px solid rgba(234,108,28,.35);border-radius:14px;padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:#ea6c1c;margin-bottom:8px">🟠 Solution 1 — Calcium (Ca)</div>
+          <div class="b-row">
+            <div class="b-col"><label>Measured (mg/l)</label><input type="number" id="b-ca-is" placeholder="420" step="1" value="${ca_is}" oninput="calcBalling()"></div>
+            <div class="b-col"><label>Target (mg/l)</label><input type="number" id="b-ca-tgt" placeholder="430" step="1" oninput="calcBalling()"></div>
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid rgba(214,51,132,.35);border-radius:14px;padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:#d63384;margin-bottom:8px">🩷 Solution 2 — Magnesium (Mg)</div>
+          <div class="b-row">
+            <div class="b-col"><label>Measured (mg/l)</label><input type="number" id="b-mg-is" placeholder="1280" step="1" value="${mg_is}" oninput="calcBalling()"></div>
+            <div class="b-col"><label>Target (mg/l)</label><input type="number" id="b-mg-tgt" placeholder="1300" step="1" oninput="calcBalling()"></div>
+          </div>
+        </div>
+
+        <div style="background:var(--surface2);border:1px solid rgba(120,60,180,.35);border-radius:14px;padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:#783cb4;margin-bottom:8px">🟣 Solution 3 — Alkalinity (KH)</div>
+          <div class="b-row">
+            <div class="b-col"><label>Measured (dKH)</label><input type="number" id="b-kh-is" placeholder="7.0" step="0.1" value="${kh_is}" oninput="calcBalling()"></div>
+            <div class="b-col"><label>Target (dKH)</label><input type="number" id="b-kh-tgt" placeholder="7.5" step="0.1" oninput="calcBalling()"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="balling-result" class="calc-result" style="display:none"></div>
+    </div>
+
+    <div class="calc-card" style="background:rgba(99,102,241,.07);border-color:rgba(99,102,241,.3)">
+      <div class="calc-title" style="font-size:13px;color:var(--dim)">ℹ️ Dosing rates (ready-to-use solution)</div>
+      <div style="font-size:12px;color:var(--dim);line-height:2">
+        <div><span style="color:#ea6c1c;font-weight:700">Solution 1 (Ca):</span> 10 ml / 100 L → +11 mg/L Ca</div>
+        <div><span style="color:#d63384;font-weight:700">Solution 2 (Mg):</span> 10 ml / 100 L → +5 mg/L Mg</div>
+        <div><span style="color:#783cb4;font-weight:700">Solution 3 (KH):</span> 10 ml / 100 L → +0.5 dKH</div>
+        <div style="margin-top:6px;opacity:.7">Add solutions separately with a few minutes apart. Never mix concentrates directly.</div>
+      </div>
+    </div>
+  </div>
+  </div>`;
+  calcBalling();
+}
+
+function calcBalling() {
+  var vol    = parseFloat(document.getElementById('b-vol')?.value);
+  var unit   = document.getElementById('b-vol-unit')?.value;
+  var ca_is  = parseFloat(document.getElementById('b-ca-is')?.value);
+  var mg_is  = parseFloat(document.getElementById('b-mg-is')?.value);
+  var kh_is  = parseFloat(document.getElementById('b-kh-is')?.value);
+  var ca_tgt = parseFloat(document.getElementById('b-ca-tgt')?.value);
+  var mg_tgt = parseFloat(document.getElementById('b-mg-tgt')?.value);
+  var kh_tgt = parseFloat(document.getElementById('b-kh-tgt')?.value);
+  var res    = document.getElementById('balling-result');
+  if (!res) return;
+
+  var hasVol = !isNaN(vol) && vol > 0;
+  var hasCa  = !isNaN(ca_is) && !isNaN(ca_tgt);
+  var hasMg  = !isNaN(mg_is) && !isNaN(mg_tgt);
+  var hasKh  = !isNaN(kh_is) && !isNaN(kh_tgt);
+
+  if (!hasVol || (!hasCa && !hasMg && !hasKh)) { res.style.display='none'; return; }
+
+  var vol_l = unit === 'gal' ? vol * 3.78541 : vol;
+
+  // Fauna Marin factors: ml needed per 100L per unit
+  // Ca: 10ml/100L = +11 mg/L  → ml_per_L_per_mgL = 10/100/11 = 0.009091
+  // Mg: 10ml/100L = +5 mg/L   → ml_per_L_per_mgL = 10/100/5  = 0.02
+  // KH: 10ml/100L = +0.5 dKH  → ml_per_L_per_dKH = 10/100/0.5 = 0.2
+  var rows = [];
+
+  if (hasCa) {
+    var diff = ca_tgt - ca_is;
+    var ml   = diff > 0 ? (vol_l * diff * 10 / 100 / 11) : 0;
+    rows.push({label:'Solution 1 — Ca', color:'#ea6c1c', diff, ml, unit:'mg/l', param:'Ca'});
+  }
+  if (hasMg) {
+    var diff = mg_tgt - mg_is;
+    var ml   = diff > 0 ? (vol_l * diff * 10 / 100 / 5) : 0;
+    rows.push({label:'Solution 2 — Mg', color:'#d63384', diff, ml, unit:'mg/l', param:'Mg'});
+  }
+  if (hasKh) {
+    var diff = kh_tgt - kh_is;
+    var ml   = diff > 0 ? (vol_l * diff * 10 / 100 / 0.5) : 0;
+    rows.push({label:'Solution 3 — KH/Alk', color:'#783cb4', diff, ml, unit:'dKH', param:'KH'});
+  }
+
+  var html = rows.map(function(r) {
+    if (r.diff === 0) return `<div class="balling-res-row"><span style="color:${r.color};font-weight:700">${r.label}</span><span style="color:var(--green)">✓ At target</span></div>`;
+    if (r.diff < 0)  return `<div class="balling-res-row"><span style="color:${r.color};font-weight:700">${r.label}</span><span style="color:var(--yellow)">⚠️ ${r.param} too high by ${Math.abs(r.diff).toFixed(1)} ${r.unit} — do a water change</span></div>`;
+    return `<div class="balling-res-row">
+      <div style="color:${r.color};font-weight:700;font-size:13px">${r.label}</div>
+      <div class="calc-res-value" style="font-size:22px;margin:2px 0">${r.ml.toFixed(1)} <span style="font-size:14px;font-weight:400">ml</span></div>
+      <div style="font-size:11px;color:var(--dim)">Δ +${r.diff.toFixed(1)} ${r.unit} in ${vol_l.toFixed(0)} L</div>
+    </div>`;
+  }).join('<div style="height:10px"></div>');
+
+  res.style.display = 'block';
+  res.innerHTML = `<div class="calc-res-label">Dosing amounts (one-time correction)</div>${html}
+    <div style="margin-top:10px;font-size:11px;color:var(--dim)">⚠️ Dose solutions separately. Recheck values after dosing before adding more.</div>`;
+}
+
+function renderLog() {
+  var tank = getActiveTank();
+  var el = document.getElementById('content');
+  if (!tank) return;
+  var data = tank.measurements||[];
+  if (!data.length) {
+    el.innerHTML='<div class="empty"><div class="empty-icon">🌊</div><h3>No measurements yet</h3><p>Use <strong>+ Add</strong> or <strong>🧬 ICP</strong> to log water parameters.</p></div>';
+    return;
+  }
+  var groups={}, keys=[];
+  data.forEach(function(d) {
+    var k = new Date(d.date).toLocaleDateString('en-GB',{month:'long',year:'numeric'});
+    if (!groups[k]) { groups[k]=[]; keys.push(k); }
+    groups[k].push(d);
+  });
+  var sorted = data.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+  el.innerHTML = keys.map(function(m) {
+    return '<div class="mlabel">'+m+'</div>'+groups[m].slice().sort(function(a,b){return new Date(b.date)-new Date(a.date);}).map(function(d){
+      var idx = sorted.findIndex(function(x){ return x.id===d.id; });
+      var prev = idx>0 ? sorted[idx-1] : null;
+      return renderCard(d, prev);
+    }).join('');
+  }).join('');
+}
+
+function renderCard(d, prevMeas) {
+  var dt = new Date(d.date);
+  var ds = dt.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+  var ts = dt.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  var badges = (d.isIcp?'<span class="bicp">ICP</span>':'') + (d.note?'<span class="bnote">note</span>':'');
+  var secHtml = GAUGE_SECTIONS.map(function(sec) {
+    var cols = sec.cols.filter(function(g){ return d[g.id]!=null; });
+    if (!cols.length) return '';
+    var gauges = cols.map(function(g){ return renderGauge(g, d[g.id]); }).join('');
+    var sub = cols[0] ? (UNITS[cols[0].id]||'') : '';
+    var rows = cols.map(function(g) {
+      var v=d[g.id], r=REFS[g.id], cls='na';
+      if (v!=null&&r) {
+        if (r.lo===0&&r.hi===0) cls=v===0?'ok':'bad';
+        else if (v>=r.lo&&v<=r.hi) cls='ok';
+        else { var rng=r.hi-r.lo,mg2=rng*0.2; cls=(v>=r.lo-mg2&&v<=r.hi+mg2)?'warn':'bad'; }
+      }
+      var fmt=v==null?'\u2014':(Math.abs(v)<0.001?v.toFixed(4):Math.abs(v)<0.01?v.toFixed(3):Math.abs(v)<0.1?v.toFixed(3):Math.abs(v)<10?v.toFixed(2):Math.abs(v)<100?v.toFixed(1):v.toFixed(0));
+      var unit=UNITS[g.id]||'';
+      var ref2=(r&&!(r.lo===0&&r.hi===0))?'<span style="font-size:10px;color:var(--dim);font-weight:400;margin-left:4px">('+r.lo+'\u2013'+r.hi+')</span>':'';
+      // Trend arrow vs previous measurement
+      var trendHtml = '';
+      if (v!=null && prevMeas && prevMeas[g.id]!=null) {
+        var diff = v - prevMeas[g.id];
+        var pct = Math.abs(diff) / (Math.abs(prevMeas[g.id])||1);
+        if (pct > 0.005) {
+          var tColor = diff>0?'#ef4444':'#22c55e';
+          // For params where lower is better (no3,no2,po4,cu,ni etc), invert color
+          var lowerBetter = ['no3','no2','po4','cu','ni','zn','cr','mn','al','sn','sb','as','pb','cd','hg','be','v'].indexOf(g.id)>=0;
+          if (lowerBetter) tColor = diff>0?'#22c55e':'#ef4444';
+          trendHtml = '<span style="font-size:11px;color:'+tColor+';margin-left:4px">'+(diff>0?'↑':'↓')+'</span>';
+        }
+      }
+      return '<div class="val-row"><span class="val-name">'+(FULL_NAMES[g.id]||g.label)+'</span>'
+        +'<span class="val-val '+cls+'">'+fmt+(unit?' '+unit:'')+ref2+trendHtml+'</span></div>';
+    }).join('');
+    return '<div class="gsec"><div class="gsec-t">'+sec.title+'</div>'
+      +'<div class="ggrid">'+gauges+'</div>'
+      +'<div class="val-tbl"><div class="val-tbl-hdr">Values'+(sub?'<span>'+sub+'</span>':'')+'</div>'+rows+'</div></div>';
+  }).join('');
+  var noteHtml = d.note?'<div class="note-text">📝 '+escHtml(d.note)+'</div>':'';
+  return '<div class="mcard"><div class="mcard-hdr">'
+    +'<div class="mdate"><strong>'+ds+'</strong> · '+ts+' '+badges+'</div>'
+    +'<div class="mcard-actions"><div class="medit" onclick="openEditMeas(\''+d.id+'\')">✏️</div>'
+    +'<div class="mdel" onclick="deleteMeas(\''+d.id+'\')">🗑</div></div></div>'
+    +secHtml+noteHtml+'</div>';
+}
+
+function renderGauge(g, val) {
+  var R=24,arc=240,circ=2*Math.PI*R,total=circ*(arc/360);
+  var pct=val!=null?Math.max(0,Math.min(1,(val-g.min)/(g.max-g.min))):0;
+  var filled=total*pct, off=circ*((360-arc)/360), col=gaugeColor(g,val);
+  var v=val==null?'\u2014':(Math.abs(val)<0.001?val.toFixed(4):Math.abs(val)<0.01?val.toFixed(3):Math.abs(val)<0.1?val.toFixed(3):Math.abs(val)<10?val.toFixed(2):Math.abs(val)<100?val.toFixed(1):val.toFixed(0));
+  return '<div class="gi"><div class="gw"><svg class="gsvg" viewBox="0 0 64 64">'
+    +'<circle class="gtrack" cx="32" cy="32" r="'+R+'" stroke-dasharray="'+total+' '+circ+'" stroke-dashoffset="-'+off+'"/>'
+    +'<circle class="gfill" cx="32" cy="32" r="'+R+'" stroke="'+col+'" stroke-dasharray="'+filled+' '+(circ-filled)+'" stroke-dashoffset="-'+off+'"/>'
+    +'</svg><div class="gval"><span class="gnum" style="color:'+col+'">'+v+'</span><span class="gunit">'+g.unit+'</span></div></div>'
+    +'<div class="glabel">'+g.label+'</div></div>';
+}
+function gaugeColor(g, v) {
+  if (v==null) return '#374151';
+  var r=REFS[g.id];
+  if (!r) { return (v>=g.ideal[0]&&v<=g.ideal[1])?'#22c55e':Math.min(Math.abs(v-g.ideal[0]),Math.abs(v-g.ideal[1]))<(g.max-g.min)*0.18?'#eab308':'#ef4444'; }
+  if (r.lo===0&&r.hi===0) return v===0?'#22c55e':'#ef4444';
+  if (v>=r.lo&&v<=r.hi) return '#22c55e';
+  var rng=r.hi-r.lo, mg=rng*0.2;
+  return (v>=r.lo-mg&&v<=r.hi+mg)?'#eab308':'#ef4444';
+}
+
+// ── Charts ────────────────────────────────────────────────────
+var CHART_GROUPS = [
+  {key:'core',title:'Core',params:['sal','temp','kh','ph']},
+  {key:'macro',title:'Macroelements',params:['ca','mg','na','k','sr','b','br','fl','iod']},
+  {key:'nutrients',title:'Nutrients',params:['no3','no2','po4','si']},
+  {key:'dynamic',title:'Dynamic Elements',params:['zn','v','cu','ni','mo']},
+  {key:'trace',title:'Trace Elements',params:['ba','co','cr','fe','li','mn','se']},
+  {key:'pollut',title:'Pollutants',params:['al','sn','sb','as','be','pb','cd','la','hg','ag','ti','w','zr']},
+];
+var PARAM_LABELS = {sal:'Salinity',temp:'Temp',kh:'KH',ph:'pH',ca:'Ca',mg:'Mg',na:'Na',k:'K',sr:'Sr',b:'B',br:'Br',fl:'F',iod:'I',no3:'NO\u2083',no2:'NO\u2082',po4:'PO\u2084',si:'SiO\u2082',zn:'Zn',v:'V',cu:'Cu',ni:'Ni',mo:'Mo',ba:'Ba',co:'Co',cr:'Cr',fe:'Fe',li:'Li',mn:'Mn',se:'Se',al:'Al',sn:'Sn',sb:'Sb',as:'As',be:'Be',pb:'Pb',cd:'Cd',la:'La',hg:'Hg',ag:'Ag',ti:'Ti',w:'W',zr:'Zr'};
+var TANK_LINE_COLORS=['#3b82f6','#14b8a6','#a855f7','#f97316','#22c55e','#ef4444','#eab308'];
+
+function destroyCharts() { Object.values(chartInstances).forEach(function(ch){ try{ch.destroy();}catch(e){} }); chartInstances={}; }
+function getTankColor(i) { return (i<state.tanks.length?state.tanks[i].color:null)||TANK_LINE_COLORS[i%TANK_LINE_COLORS.length]; }
+function hexToRgba(hex,a) { var r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16); return 'rgba('+r+','+g+','+b+','+a+')'; }
+
+function renderCharts() {
+  var el=document.getElementById('chartContent');
+  var tank = getActiveTank();
+  if (!tank) { el.innerHTML='<div class="empty"><div class="empty-icon">📈</div><h3>No tank selected</h3></div>'; return; }
+  function grpHasData(grp) {
+    return grp.params.some(function(p){ return (tank.measurements||[]).some(function(m){ return m[p]!=null; }); });
+  }
+  var vis=CHART_GROUPS.filter(grpHasData);
+  if (!vis.length) { el.innerHTML='<div class="empty"><div class="empty-icon">📈</div><h3>No chart data yet</h3><p>Add measurements to see charts.</p></div>'; return; }
+  el.innerHTML=vis.map(function(grp) {
+    return '<div class="chart-section" id="cs-'+grp.key+'"><div class="cs-title">'+grp.title+'</div>'
+      +'<div class="param-pills" id="pills-'+grp.key+'"></div>'
+      +'<div class="chart-wrap"><canvas id="chart-'+grp.key+'"></canvas></div>'
+      +'<div style="margin-top:8px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--dim)">'
+      +'<svg width="10" height="10" viewBox="0 0 10 10"><polygon points="5,0 10,5 5,10 0,5" fill="#14b8a6"/></svg>'
+      +'ICP measurement</div>'
+      +'</div>';
+  }).join('')+'<div class="chart-section" id="corrSection"></div>';
+  vis.forEach(function(grp) {
+    if (!activeChartParams[grp.key]) {
+      activeChartParams[grp.key]=grp.params.find(function(p){ return (tank.measurements||[]).some(function(m){ return m[p]!=null; }); })||grp.params[0];
+    }
+    renderPills(grp); drawChart(grp);
+  });
+  renderCorrelation();
+}
+function renderPills(grp) {
+  var el=document.getElementById('pills-'+grp.key); if (!el) return;
+  var tank = getActiveTank();
+  var pwdata=grp.params.filter(function(p){ return (tank.measurements||[]).some(function(m){ return m[p]!=null; }); });
+  if (!pwdata.length) pwdata=grp.params;
+  var color = tank ? tank.color : getTankColor(0);
+  el.innerHTML=pwdata.map(function(p) {
+    var act=activeChartParams[grp.key]===p;
+    return '<div class="pill'+(act?' active':'')+'"'+(act?' style="background:'+color+';border-color:'+color+'"':'')+' onclick="selectParam(\''+grp.key+'\',\''+p+'\')">'+( PARAM_LABELS[p]||p)+'</div>';
+  }).join('');
+}
+function selectParam(key,p) {
+  activeChartParams[key]=p;
+  var grp=CHART_GROUPS.find(function(g){ return g.key===key; });
+  renderPills(grp);
+  if (chartInstances[key]) { chartInstances[key].destroy(); delete chartInstances[key]; }
+  drawChart(grp);
+}
+function drawChart(grp) {
+  var tank = getActiveTank(); if (!tank) return;
+  var param=activeChartParams[grp.key];
+  var canvas=document.getElementById('chart-'+grp.key); if (!canvas) return;
+  var measList = tank.measurements||[];
+  var withData = measList.filter(function(m){ return m[param]!=null; });
+  if (!withData.length) { canvas.parentElement.innerHTML='<div class="no-data">No data for this parameter</div>'; return; }
+  var sorted = withData.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
+  var labels = sorted.map(function(d){ return new Date(d.date).toLocaleDateString('en-GB',{day:'numeric',month:'short'}); });
+  var color = tank.color || getTankColor(0);
+  var pointStyles = sorted.map(function(m){ return m.isIcp?'rectRot':'circle'; });
+  var pointRadii  = sorted.map(function(m){ return m.isIcp?6:4; });
+  var pointColors = sorted.map(function(m){ return m.isIcp?'#14b8a6':color; });
+  var dataset = {
+    label: tank.name,
+    data: sorted.map(function(m){ return m[param]; }),
+    borderColor: color,
+    backgroundColor: hexToRgba(color, 0.1),
+    borderWidth: 2,
+    pointStyle: pointStyles,
+    pointRadius: pointRadii,
+    pointHoverRadius: 8,
+    pointBackgroundColor: pointColors,
+    pointBorderColor: pointColors,
+    pointBorderWidth: 2,
+    tension: 0.3,
+    fill: true,
+    spanGaps: true
+  };
+  var ref=REFS[param], unit=UNITS[param]||'';
+  var ctx=canvas.getContext('2d');
+
+  // Build datasets: data line + optional min/max reference lines
+  var datasets = [dataset];
+  if (ref && ref.hi > 0) {
+    var refLabels = [labels[0], labels[labels.length-1]];
+    datasets.push({
+      label: 'Min ('+ref.lo+')',
+      data: labels.map(function(){ return ref.lo; }),
+      borderColor: 'rgba(34,197,94,0.5)',
+      borderWidth: 1.5,
+      borderDash: [6,4],
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
+      tension: 0,
+      spanGaps: true
+    });
+    datasets.push({
+      label: 'Max ('+ref.hi+')',
+      data: labels.map(function(){ return ref.hi; }),
+      borderColor: 'rgba(34,197,94,0.5)',
+      borderWidth: 1.5,
+      borderDash: [6,4],
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      fill: false,
+      tension: 0,
+      spanGaps: true
+    });
+  }
+
+  chartInstances[grp.key]=new Chart(ctx,{
+    type:'line', data:{labels:labels,datasets:datasets},
+    options:{responsive:true,maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{
+          backgroundColor:'#111827',borderColor:'#1f2d42',borderWidth:1,titleColor:'#e8f0fe',bodyColor:'#6b7fa3',
+          filter: function(item){ return item.datasetIndex === 0; },
+          callbacks:{label:function(ctx){ return ctx.parsed.y!=null?ctx.parsed.y+' '+unit:'—'; }}
+        }
+      },
+      scales:{
+        x:{ticks:{color:'#6b7fa3',font:{family:'Outfit',size:10},maxRotation:0},grid:{color:'rgba(31,45,66,.5)'}},
+        y:{ticks:{color:'#6b7fa3',font:{family:'Outfit',size:10},callback:function(v){ return v+' '+unit; }},grid:{color:'rgba(31,45,66,.5)'}}
+      }
+    }
+  });
+}
+
+// ── Dosing Journal ────────────────────────────────────────────
+// state.doses = [{id, date, tankId, items:[{name,amount,unit}], note}]
+var doseFormVisible = false;
+var doseEditId = null;
+
+function getDoses() { return state.doses || []; }
+function saveDoses(arr) { state.doses = arr; saveState(); }
+
+function renderDose() {
+  var el = document.getElementById('doseContent');
+  var doses = getDoses();
+  var tank = getActiveTank();
+  var tankDoses = doses.filter(function(d){ return d.tankId === (tank&&tank.id); })
+    .slice().sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+
+  var tankTabs = '<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none">'
+    + state.tanks.map(function(t){
+        var act = tank && t.id===tank.id;
+        return '<div class="pill'+(act?' active':'')+'" onclick="state.activeTank=\''+t.id+'\';renderDose()" style="'+(act?'background:'+t.color+';border-color:'+t.color:'')+'"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+t.color+';margin-right:4px"></span>'+escHtml(t.name)+'</div>';
+      }).join('') + '</div>';
+
+  var formHtml = '';
+  if (doseFormVisible) {
+    var editing = doseEditId ? doses.find(function(d){return d.id===doseEditId;}) : null;
+    var defDate = editing ? editing.date.slice(0,16) : new Date().toISOString().slice(0,16);
+    var defNote = editing ? (editing.note||'') : '';
+    var defItems = editing ? editing.items : [{name:'Balling 1 Ca',amount:'',unit:'ml'},{name:'Balling 2 Mg',amount:'',unit:'ml'},{name:'Balling 3 KH',amount:'',unit:'ml'}];
+    formHtml = `<div class="rem-form" id="doseForm">
+      <div class="rem-form-title">${doseEditId?'✏️ Edit':'➕ New'} Dosing Entry</div>
+      <div class="rem-field"><label>Date & Time</label>
+        <input type="datetime-local" id="d-date" value="${defDate}">
+      </div>
+      <div class="rem-form-title" style="font-size:13px;margin:12px 0 6px">Dosing Items</div>
+      <div id="d-items">${defItems.map(function(it,i){
+        return '<div style="display:flex;gap:6px;margin-bottom:6px" data-idx="'+i+'">'
+          +'<input type="text" placeholder="Name (e.g. Balling Ca)" value="'+escHtml(it.name||'')+'" style="flex:2;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--text);font-size:14px;font-family:Outfit,sans-serif;outline:none" class="di-name">'
+          +'<input type="number" placeholder="0" value="'+(it.amount||'')+'" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--text);font-size:14px;font-family:Outfit,sans-serif;outline:none" class="di-amount" min="0" step="0.1">'
+          +'<select style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 6px;color:var(--text);font-size:13px;font-family:Outfit,sans-serif;outline:none" class="di-unit">'
+          +'<option'+(it.unit==='ml'?' selected':'')+'>ml</option><option'+(it.unit==='g'?' selected':'')+'>g</option><option'+(it.unit==='drops'?' selected':'')+'>drops</option></select>'
+          +'<button onclick="this.parentElement.remove()" style="background:rgba(239,68,68,.15);border:none;border-radius:8px;color:#ef4444;padding:0 10px;cursor:pointer;font-size:16px">✕</button>'
+          +'</div>';
+      }).join('')}</div>
+      <button onclick="addDoseItem()" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 14px;color:var(--dim);font-size:13px;cursor:pointer;margin-bottom:10px;font-family:Outfit,sans-serif">＋ Add Item</button>
+      <div class="rem-field"><label>Note (optional)</label>
+        <textarea id="d-note" placeholder="Observations, reactions...">${escHtml(defNote)}</textarea>
+      </div>
+      <button class="rem-save-btn" onclick="saveDoseEntry()">💾 Save Entry</button>
+    </div>`;
+  }
+
+  var cardsHtml = tankDoses.length ? tankDoses.map(function(d){
+    var dt = new Date(d.date);
+    var ds = dt.toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'});
+    var ts = dt.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+    var itemsHtml = d.items.map(function(it){
+      return '<span style="display:inline-flex;align-items:center;gap:4px;background:var(--surface2);border-radius:8px;padding:4px 10px;font-size:13px"><strong style="color:var(--text)">'+escHtml(it.name)+'</strong><span style="color:var(--accent)">'+it.amount+' '+it.unit+'</span></span>';
+    }).join('');
+    return '<div class="rem-card"><div class="rem-card-head"><div style="flex:1"><div class="rem-name">📅 '+ds+' · '+ts+'</div></div>'
+      +'<div style="display:flex;gap:6px">'
+      +'<button class="rem-btn" data-did="'+d.id+'" onclick="editDose(this.dataset.did)">✏️</button>'
+      +'<button class="rem-btn del-btn" data-did="'+d.id+'" onclick="deleteDose(this.dataset.did)">🗑️</button>'
+      +'</div></div>'
+      +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0">'+itemsHtml+'</div>'
+      +(d.note?'<div class="rem-note">📝 '+escHtml(d.note)+'</div>':'')
+      +'</div>';
+  }).join('') : '<div class="rem-empty"><div class="rem-empty-icon">💊</div><div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px">No dosing entries yet</div><div style="font-size:13px">Log your daily Balling, additives and supplements.</div></div>';
+
+  // Dosing chart: sum per substance per week
+  var chartHtml = '';
+  if (tankDoses.length >= 2) {
+    chartHtml = '<div style="margin-bottom:18px"><div class="gsec-t" style="margin-bottom:8px">📊 Dosing History</div><div style="position:relative;height:200px"><canvas id="doseChart"></canvas></div></div>';
+  }
+
+  el.innerHTML = '<div style="padding-bottom:24px">'+tankTabs
+    +'<div style="display:flex;gap:8px;margin-bottom:12px">'
+    +'<button class="rem-add-btn" style="flex:1;margin-bottom:0" onclick="toggleDoseForm()">'+(doseFormVisible?'✕ Cancel':'➕ Add Dosing Entry')+'</button>'
+    +'<button class="rem-add-btn" style="flex:0 0 auto;margin-bottom:0;background:var(--surface2);color:var(--dim)" onclick="exportCSV()">⬇️ CSV</button>'
+    +'</div>'
+    +formHtml+chartHtml+cardsHtml+'</div>';
+
+  if (tankDoses.length >= 2) buildDoseChart(tankDoses);
+}
+
+function addDoseItem() {
+  var c = document.getElementById('d-items');
+  var div = document.createElement('div');
+  div.style.cssText='display:flex;gap:6px;margin-bottom:6px';
+  div.innerHTML='<input type="text" placeholder="Name" style="flex:2;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--text);font-size:14px;font-family:Outfit,sans-serif;outline:none" class="di-name">'
+    +'<input type="number" placeholder="0" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 10px;color:var(--text);font-size:14px;font-family:Outfit,sans-serif;outline:none" class="di-amount" min="0" step="0.1">'
+    +'<select style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px 6px;color:var(--text);font-size:13px;font-family:Outfit,sans-serif;outline:none" class="di-unit"><option>ml</option><option>g</option><option>drops</option></select>'
+    +'<button onclick="this.parentElement.remove()" style="background:rgba(239,68,68,.15);border:none;border-radius:8px;color:#ef4444;padding:0 10px;cursor:pointer;font-size:16px">✕</button>';
+  c.appendChild(div);
+}
+
+function saveDoseEntry() {
+  var dateVal = document.getElementById('d-date').value;
+  if (!dateVal) { showToast('Pick a date', true); return; }
+  var items = [];
+  document.querySelectorAll('#d-items > div').forEach(function(row){
+    var name = (row.querySelector('.di-name')||{}).value||'';
+    var amount = parseFloat((row.querySelector('.di-amount')||{}).value)||0;
+    var unit = (row.querySelector('.di-unit')||{}).value||'ml';
+    if (name && amount) items.push({name:name.trim(), amount:amount, unit:unit});
+  });
+  if (!items.length) { showToast('Add at least one dosing item', true); return; }
+  var tank = getActiveTank();
+  var doses = getDoses();
+  var entry = { id: doseEditId||uid(), date: new Date(dateVal).toISOString(), tankId: tank&&tank.id, items: items, note: document.getElementById('d-note').value.trim() };
+  if (doseEditId) {
+    state.doses = doses.map(function(d){ return d.id===doseEditId?entry:d; });
+  } else {
+    if (!state.doses) state.doses=[];
+    state.doses.push(entry);
+  }
+  saveState();
+  doseFormVisible=false; doseEditId=null;
+  renderDose(); showToast('Dosing entry saved ✓');
+}
+
+function toggleDoseForm() { doseFormVisible=!doseFormVisible; doseEditId=null; renderDose(); }
+function editDose(id) { doseEditId=id; doseFormVisible=true; renderDose(); }
+function deleteDose(id) { state.doses=(state.doses||[]).filter(function(d){return d.id!==id;}); saveState(); renderDose(); showToast('Entry deleted'); }
+
+function buildDoseChart(doses) {
+  var canvas = document.getElementById('doseChart');
+  if (!canvas) return;
+  // Collect all substance names
+  var names = {};
+  doses.forEach(function(d){ d.items.forEach(function(it){ names[it.name]=true; }); });
+  names = Object.keys(names).slice(0,6); // max 6 lines
+  var labels = doses.map(function(d){ return new Date(d.date).toLocaleDateString('de-DE',{day:'numeric',month:'short'}); });
+  var colors = ['#3b82f6','#f97316','#a855f7','#14b8a6','#22c55e','#ef4444'];
+  var datasets = names.map(function(name,i){
+    return {
+      label: name,
+      data: doses.map(function(d){
+        var it = d.items.find(function(x){ return x.name===name; });
+        return it ? it.amount : null;
+      }),
+      borderColor: colors[i%colors.length],
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      pointRadius: 4,
+      tension: 0.3,
+      spanGaps: true
+    };
+  });
+  if (chartInstances['dose']) { try{chartInstances['dose'].destroy();}catch(e){} }
+  chartInstances['dose'] = new Chart(canvas.getContext('2d'), {
+    type:'line', data:{labels:labels,datasets:datasets},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,labels:{color:'#6b7fa3',font:{family:'Outfit',size:11},boxWidth:12}}},
+      scales:{
+        x:{ticks:{color:'#6b7fa3',font:{family:'Outfit',size:10},maxRotation:0},grid:{color:'rgba(31,45,66,.5)'}},
+        y:{ticks:{color:'#6b7fa3',font:{family:'Outfit',size:10}},grid:{color:'rgba(31,45,66,.5)'},min:0}
+      }
+    }
+  });
+}
+
+// ── Correlation Chart (in Charts tab) ─────────────────────────
+var corrX = 'kh', corrY = 'ca', corrChartInst = null;
+
+function renderCorrelation() {
+  var tank = getActiveTank();
+  var el = document.getElementById('corrSection');
+  if (!el || !tank) return;
+  var meas = (tank.measurements||[]).filter(function(m){ return m[corrX]!=null && m[corrY]!=null; });
+  var paramOpts = Object.keys(PARAM_LABELS).map(function(k){
+    return '<option value="'+k+'">'+(FULL_NAMES[k]||PARAM_LABELS[k])+'</option>';
+  }).join('');
+  el.innerHTML = '<div class="gsec-t" style="margin-bottom:8px">🔗 Correlation</div>'
+    +'<div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap">'
+    +'<select id="corr-x" onchange="corrX=this.value;renderCorrelation()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text);font-size:13px;font-family:Outfit,sans-serif;outline:none">'+paramOpts+'</select>'
+    +'<span style="align-self:center;color:var(--dim)">vs</span>'
+    +'<select id="corr-y" onchange="corrY=this.value;renderCorrelation()" style="flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:8px;color:var(--text);font-size:13px;font-family:Outfit,sans-serif;outline:none">'+paramOpts+'</select>'
+    +'</div>';
+  // Set selected values
+  document.getElementById('corr-x').value = corrX;
+  document.getElementById('corr-y').value = corrY;
+  if (meas.length < 2) {
+    el.innerHTML += '<div style="color:var(--dim);font-size:13px;padding:16px 0">Need at least 2 measurements with both parameters.</div>';
+    return;
+  }
+  el.innerHTML += '<div style="position:relative;height:220px"><canvas id="corrChart"></canvas></div>';
+  var color = tank.color || '#3b82f6';
+  var points = meas.map(function(m){ return {x:m[corrX], y:m[corrY]}; });
+  if (corrChartInst) { try{corrChartInst.destroy();}catch(e){} }
+  corrChartInst = new Chart(document.getElementById('corrChart').getContext('2d'), {
+    type:'scatter',
+    data:{ datasets:[{ label:PARAM_LABELS[corrX]+' vs '+PARAM_LABELS[corrY], data:points, backgroundColor:hexToRgba(color,0.7), borderColor:color, borderWidth:1, pointRadius:5, pointHoverRadius:7 }] },
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{backgroundColor:'#111827',borderColor:'#1f2d42',borderWidth:1,callbacks:{label:function(c){ return PARAM_LABELS[corrX]+': '+c.parsed.x+' | '+PARAM_LABELS[corrY]+': '+c.parsed.y; }}}},
+      scales:{
+        x:{title:{display:true,text:(FULL_NAMES[corrX]||PARAM_LABELS[corrX])+' ('+(UNITS[corrX]||'')+')',color:'#6b7fa3',font:{family:'Outfit',size:11}},ticks:{color:'#6b7fa3',font:{family:'Outfit',size:10}},grid:{color:'rgba(31,45,66,.5)'}},
+        y:{title:{display:true,text:(FULL_NAMES[corrY]||PARAM_LABELS[corrY])+' ('+(UNITS[corrY]||'')+')',color:'#6b7fa3',font:{family:'Outfit',size:11}},ticks:{color:'#6b7fa3',font:{family:'Outfit',size:10}},grid:{color:'rgba(31,45,66,.5)'}}
+      }
+    }
+  });
+}
+
+// ── CSV Export ────────────────────────────────────────────────
+function exportCSV() {
+  var tank = getActiveTank();
+  if (!tank || !tank.measurements || !tank.measurements.length) { showToast('No data to export', true); return; }
+  var params = ['date','sal','temp','kh','ph','ca','mg','na','k','sr','b','br','fl','iod','no3','no2','po4','si','zn','v','cu','ni','mo','ba','co','cr','fe','li','mn','se','al','sn','sb','as','pb','cd','la','hg','ag','ti','w','zr','be','note'];
+  var header = params.join(',');
+  var rows = tank.measurements.slice().sort(function(a,b){return new Date(a.date)-new Date(b.date);}).map(function(m){
+    return params.map(function(p){
+      if (p==='date') return '"'+m.date+'"';
+      if (p==='note') return '"'+(m.note||'').replace(/"/g,'""')+'"';
+      return m[p]!=null?m[p]:'';
+    }).join(',');
+  });
+  var csv = header+'\n'+rows.join('\n');
+  var blob = new Blob([csv], {type:'text/csv'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url; a.download = (tank.name.replace(/[^a-z0-9]/gi,'_')||'tank')+'_measurements.csv';
+  a.click(); URL.revokeObjectURL(url);
+  showToast('CSV exported ✓');
+}
+
+// ── ICP Parser ────────────────────────────────────────────────
+function parseIcp(raw) {
+  // Normalize whitespace
+  var s = raw.replace(/[\r\n\t]+/g,' ').replace(/ {2,}/g,' ');
+
+  // Guard: must look like a Fauna Marin ICP report
+  if (!/Analysen.?ID/i.test(s) && !/REEF ICP/i.test(s)) return null;
+
+  var r = {isIcp:true};
+
+  function num(re) {
+    var m = s.match(re);
+    return m ? parseFloat(m[1].replace(',','.')) : null;
+  }
+  function nn(label) {
+    // "label [symbol] n.n." — the element symbol may appear between label and n.n.
+    return new RegExp(label+'(?:\\s+[A-Za-z]{1,2})?\\s+n\\.n\\.','i').test(ms) ? 0 : null;
+  }
+
+  // Cut off OSMOSEWASSER section to avoid duplicate matches
+  var osi = s.search(/OSMOSEWASSER/i);
+  var ms = osi>0 ? s.slice(0,osi) : s;
+
+  function gm(re) {
+    var m = ms.match(re);
+    return m ? parseFloat(m[1].replace(',','.')) : null;
+  }
+
+  // ── Sample date ──
+  var dateMatch = s.match(/Entnahmedatum[:\s]+(\d{2})\.(\d{2})\.(\d{4})/);
+  if (dateMatch) {
+    r.sampleDate = dateMatch[3]+'-'+dateMatch[2]+'-'+dateMatch[1];
+  }
+
+  // ── REFERENCE-RANGE MATCHING ─────────────────────────────────
+  // In Fauna Marin PDFs, row labels appear as sidebar text AFTER the values.
+  // Each data row is: "MEASURED_VALUE  LO - MID - HI" or "MEASURED_VALUE  LO - HI"
+  // We identify rows by their EXACT reference ranges (most reliable).
+  function byRef(re) {
+    var m = ms.match(re);
+    return m ? parseFloat(m[1].replace(',','.')) : null;
+  }
+
+  // ── Core ──
+  r.ph  = byRef(/pH-Wert\s+([\d]+[,.][\d]+)/i);  // pH always has inline label
+  // Salinität: ref is "34 - 35 - 36"
+  r.sal = byRef(/([\d]+[,.][\d]+)\s+34\s*-\s*35\s*-\s*36\b/);
+  // KH: ref is "6,5 - 7,3 - 8,5"
+  r.kh  = byRef(/([\d]+[,.][\d]+)\s+6[,.]5\s*-\s*7[,.]3\s*-\s*8[,.]5/);
+
+  // ── Macros ──
+  r.na  = num(/Natrium\s+Na\s+([\d]{4,6}(?:[,.][\d]+)?)/i);
+  if (r.na==null) r.na = num(/Natrium\s+([\d]{4,6}(?:[,.][\d]+)?)/i);
+  r.k   = num(/Kalium\s+K\s+([\d]{3,4}(?:[,.][\d]+)?)/i);
+  if (r.k==null)  r.k  = num(/Kalium\s+([\d]{3,4}(?:[,.][\d]+)?)/i);
+  r.b   = num(/\bBor\s+B\s+([\d]+[,.][\d]+)/i);
+  if (r.b==null)  r.b  = num(/\bBor\s+([\d]+[,.][\d]+)/i);
+  r.mg  = num(/Magnesium\s+Mg\s+([\d]{3,4}(?:[,.][\d]+)?)/i);
+  if (r.mg==null) r.mg = num(/Magnesium\s+([\d]{3,4}(?:[,.][\d]+)?)/i);
+  r.ca  = num(/Calcium\s+Ca\s+([\d]{3,4}(?:[,.][\d]+)?)/i);
+  if (r.ca==null) r.ca = num(/Calcium\s+([\d]{3,4}(?:[,.][\d]+)?)/i);
+  r.sr  = num(/Strontium\s+Sr\s+([\d]+[,.][\d]+)/i);
+  if (r.sr==null) r.sr = num(/Strontium\s+([\d]+[,.][\d]+)/i);
+  r.br  = num(/Brom[^)]*\)\s+Br\s+([\d]+[,.][\d]+)/i);
+  if (r.br==null) r.br = num(/Brom[^)]*\)\s+([\d]+[,.][\d]+)/i);
+  if (r.br==null) r.br = num(/\bBr\b\s+([\d]+[,.][\d]+)/i);
+  r.fl  = num(/Fluorid\s+F[^\s]*\s+([\d]+[,.][\d]+)/i);
+  if (r.fl==null) r.fl = num(/Fluorid\s+([\d]+[,.][\d]+)/i);
+  r.iod = num(/Iod[^)]*\)\s+I\s+([\d]+[,.][\d]+)/i);
+  if (r.iod==null) r.iod = num(/Iod\s*\([^)]+\)\s*([\d]+[,.][\d]+)/i);
+  if (r.iod==null) r.iod = byRef(/([\d]+[,.][\d]+)\s+0[,.]055\s*-\s*0[,.]065\s*-\s*0[,.]080/);
+  if (r.iod==null) r.iod = num(/\bI\b\s+(0[,.][\d]+)/i);
+
+  // ── Nutrients ──
+  r.no3 = num(/Nitrat\s+NO3[^\s]*\s+([\d]+[,.][\d]*)/i);
+  if (r.no3==null) r.no3 = num(/Nitrat\s+([\d]+[,.][\d]*)/i);
+  r.no2 = num(/Nitrit\s+NO2[^\s]*\s+([\d]+[,.][\d]+)/i);
+  if (r.no2==null) r.no2 = num(/Nitrit\s+([\d]+[,.][\d]+)/i);
+  // ortho-Phosphat: ref is exactly "0,02 - 0,10" (Gesamtphosphat has "0,02 - 0,18")
+  r.po4 = byRef(/([\d]+[,.][\d]+)\s+0[,.]0[12]\s*-\s*0[,.]10\b/);
+  // Silikat (berechnet): ref is "0,2 - 0,4"
+  r.si  = byRef(/([\d]+[,.][\d]+)\s+0[,.]2\s*-\s*0[,.]4\b/);
+
+  // ── Dynamic elements (µg/l) ──
+  r.zn = gm(/\bZink\s+Zn\s+([\d]+[,.][\d]+)/i);
+  if (r.zn==null) r.zn = gm(/\bZink\s+([\d]+[,.][\d]+)/i);
+  if (r.zn==null) r.zn = nn('Zink');
+  r.v  = gm(/Vanadium\s+V\s+([\d]+[,.][\d]+)/i);
+  if (r.v==null)  r.v  = gm(/Vanadium\s+([\d]+[,.][\d]+)/i);
+  r.cu = gm(/Kupfer\s+Cu\s+([\d]+[,.][\d]+)/i);
+  if (r.cu==null) r.cu = gm(/Kupfer\s+([\d]+[,.][\d]+)/i);
+  r.ni = gm(/Nickel\s+Ni\s+([\d]+[,.][\d]+)/i);
+  if (r.ni==null) r.ni = gm(/Nickel\s+([\d]+[,.][\d]+)/i);
+  r.mo = gm(/Molybd[äa]n\s+Mo\s+([\d]+[,.][\d]+)/i);
+  if (r.mo==null) r.mo = gm(/Molybd[äa]n\s+([\d]+[,.][\d]+)/i);
+
+  // ── Trace / physiological ──
+  r.ba = gm(/\bBarium\s+Ba\s+([\d]+[,.][\d]+)/i);
+  if (r.ba==null) r.ba = gm(/\bBarium\s+([\d]+[,.][\d]+)/i);
+  if (r.ba==null) r.ba = nn('Barium');
+  r.co = gm(/Cobalt\s+Co\s+([\d]+[,.][\d]+)/i);
+  if (r.co==null) r.co = gm(/Cobalt\s+([\d]+[,.][\d]+)/i);
+  if (r.co==null) r.co = nn('Cobalt');
+  r.cr = gm(/\bChrom\s+Cr\s+([\d]+[,.][\d]+)/i);
+  if (r.cr==null) r.cr = gm(/\bChrom\s+([\d]+[,.][\d]+)/i);
+  if (r.cr==null) r.cr = nn('Chrom');
+  r.fe = gm(/Eisen\s+Fe\s+([\d]+[,.][\d]+)/i);
+  if (r.fe==null) r.fe = gm(/Eisen\s+([\d]+[,.][\d]+)/i);
+  if (r.fe==null) r.fe = nn('Eisen');
+  r.li = gm(/Lithium\s+Li\s+([\d]+(?:[,.][\d]+)?)/i);
+  if (r.li==null) r.li = gm(/Lithium\s+([\d]+(?:[,.][\d]+)?)/i);
+  r.mn = gm(/Mangan\s+Mn\s+([\d]+[,.][\d]+)/i);
+  if (r.mn==null) r.mn = gm(/Mangan\s+([\d]+[,.][\d]+)/i);
+  if (r.mn==null) r.mn = nn('Mangan');
+  r.se = gm(/\bSelen\s+Se\s+([\d]+[,.][\d]+)/i);
+  if (r.se==null) r.se = gm(/\bSelen\s+([\d]+[,.][\d]+)/i);
+  if (r.se==null) r.se = nn('Selen');
+
+  // ── Pollutants ──
+  r.al = gm(/Aluminium\s+Al\s+([\d]+(?:[,.][\d]+)?)/i);
+  if (r.al==null) r.al = gm(/Aluminium\s+([\d]+(?:[,.][\d]+)?)/i);
+  r.sn = gm(/Zinn\s+Sn\s+([\d]+[,.][\d]+)/i);
+  if (r.sn==null) r.sn = gm(/Zinn\s+([\d]+[,.][\d]+)/i);
+  if (r.sn==null) r.sn = nn('Zinn');
+  r.sb = gm(/Antimon\s+Sb\s+([\d]+[,.][\d]+)/i);
+  if (r.sb==null) r.sb = gm(/Antimon\s+([\d]+[,.][\d]+)/i);
+  if (r.sb==null) r.sb = nn('Antimon');
+  r.as = gm(/Arsen\s+As\s+([\d]+[,.][\d]+)/i);
+  if (r.as==null) r.as = gm(/Arsen\s+([\d]+[,.][\d]+)/i);
+  if (r.as==null) r.as = nn('Arsen');
+  r.be = gm(/Beryllium\s+Be\s+([\d]+[,.][\d]+)/i);
+  if (r.be==null) r.be = gm(/Beryllium\s+([\d]+[,.][\d]+)/i);
+  if (r.be==null) r.be = nn('Beryllium');
+  r.pb = gm(/\bBlei\s+Pb\s+([\d]+[,.][\d]+)/i);
+  if (r.pb==null) r.pb = gm(/\bBlei\s+([\d]+[,.][\d]+)/i);
+  if (r.pb==null) r.pb = nn('Blei');
+  r.cd = gm(/Cadmium\s+Cd\s+([\d]+[,.][\d]+)/i);
+  if (r.cd==null) r.cd = gm(/Cadmium\s+([\d]+[,.][\d]+)/i);
+  if (r.cd==null) r.cd = nn('Cadmium');
+  r.la = gm(/Lanthan\s+La\s+([\d]+[,.][\d]+)/i);
+  if (r.la==null) r.la = gm(/Lanthan\s+([\d]+[,.][\d]+)/i);
+  if (r.la==null) r.la = nn('Lanthan');
+  r.hg = gm(/Quecksilber\s+Hg\s+([\d]+[,.][\d]+)/i);
+  if (r.hg==null) r.hg = gm(/Quecksilber\s+([\d]+[,.][\d]+)/i);
+  if (r.hg==null) r.hg = nn('Quecksilber');
+  r.ag = gm(/Silber\s+Ag\s+([\d]+[,.][\d]+)/i);
+  if (r.ag==null) r.ag = gm(/Silber\s+([\d]+[,.][\d]+)/i);
+  if (r.ag==null) r.ag = nn('Silber');
+  r.ti = gm(/Titan\b\s+Ti\s+([\d]+[,.][\d]+)/i);
+  if (r.ti==null) r.ti = gm(/Titan\b\s+([\d]+[,.][\d]+)/i);
+  if (r.ti==null) r.ti = nn('Titan');
+  r.w  = gm(/Wolfram\s+W\s+([\d]+[,.][\d]+)/i);
+  if (r.w==null)  r.w  = gm(/Wolfram\s+([\d]+[,.][\d]+)/i);
+  if (r.w==null)  r.w  = nn('Wolfram');
+  r.zr = gm(/Zirkonium\s+Zr\s+([\d]+[,.][\d]+)/i);
+  if (r.zr==null) r.zr = gm(/Zirkonium\s+([\d]+[,.][\d]+)/i);
+  if (r.zr==null) r.zr = nn('Zirkonium');
+
+  return r;
+}
+
+// ── ICP Modal ─────────────────────────────────────────────────
+function openIcpModal() {
+  icpParsed = null;
+  document.getElementById('dz').style.display = '';
+  document.getElementById('iproc').className = 'iproc';
+  document.getElementById('imsg').className = 'imsg';
+  document.getElementById('iprev').className = 'iprev';
+  document.getElementById('icpSaveBtn').style.display = 'none';
+  document.getElementById('icpFile').value = '';
+  document.getElementById('ovI').classList.add('open');
+}
+function closeIcpModal() { document.getElementById('ovI').classList.remove('open'); }
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('dz').classList.remove('drag');
+  var file = e.dataTransfer.files[0];
+  if (file && file.type==='application/pdf') processPdf(file);
+}
+function handleFile(e) {
+  var file = e.target.files[0];
+  if (file) processPdf(file);
+}
+
+async function processPdf(file) {
+  document.getElementById('dz').style.display = 'none';
+  document.getElementById('iproc').className = 'iproc show';
+  document.getElementById('imsg').className = 'imsg';
+  document.getElementById('iprev').className = 'iprev';
+  document.getElementById('icpSaveBtn').style.display = 'none';
+
+  try {
+    var ab = await file.arrayBuffer();
+    var pdf = await pdfjsLib.getDocument({data:ab}).promise;
+    var text = '';
+    // Read pages 1-3 (ICP data is on first 3 pages)
+    for (var i=1; i<=Math.min(3,pdf.numPages); i++) {
+      var page = await pdf.getPage(i);
+      var tc = await page.getTextContent();
+      text += tc.items.map(function(it){ return it.str; }).join(' ') + ' ';
+    }
+
+    document.getElementById('iproc').className = 'iproc';
+    var parsed = parseIcp(text);
+
+    if (!parsed) {
+      showImsg('Could not read ICP data. Make sure this is a Fauna Marin REEF ICP TOTAL PDF.', 'err');
+      return;
+    }
+
+    icpParsed = parsed;
+
+    // Check how many values we got
+    var filled = ALL_FIELDS.filter(function(f){ return parsed[f]!=null; });
+    showImsg('✓ Read '+filled.length+' values successfully', 'ok');
+
+    // Show preview of key values
+    var previewKeys = ['sal','ph','kh','ca','mg','no3','po4','na','k','br','iod','zn','v','cu','ni','mo'];
+    var prevFilled = previewKeys.filter(function(k){ return parsed[k]!=null; });
+    document.getElementById('iprev-t').textContent = parsed.sampleDate
+      ? 'Sample: '+new Date(parsed.sampleDate).toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})
+      : 'ICP Preview';
+    document.getElementById('iprev-s').textContent = filled.length+' values parsed';
+    document.getElementById('iprev-rows').innerHTML = prevFilled.map(function(k) {
+      var v=parsed[k], fmt=v==null?'\u2014':(Math.abs(v)<0.01?v.toFixed(3):Math.abs(v)<1?v.toFixed(3):Math.abs(v)<10?v.toFixed(2):Math.abs(v)<100?v.toFixed(1):v.toFixed(0));
+      return '<div class="ipr"><span class="ipr-n">'+(FULL_NAMES[k]||k)+'</span><span class="ipr-v">'+fmt+' '+(UNITS[k]||'')+'</span></div>';
+    }).join('');
+    document.getElementById('iprev').className = 'iprev show';
+    document.getElementById('icpSaveBtn').style.display = '';
+
+  } catch(err) {
+    document.getElementById('iproc').className = 'iproc';
+    showImsg('Error reading PDF: '+err.message, 'err');
+  }
+}
+
+function showImsg(msg, type) {
+  var el = document.getElementById('imsg');
+  el.textContent = msg;
+  el.className = 'imsg show imsg-'+(type==='ok'?'ok':'err');
+}
+
+function saveIcpEntry() {
+  if (!icpParsed) return;
+  var tank = getActiveTank(); if (!tank) return;
+  var entry = {};
+  ALL_FIELDS.forEach(function(f){ entry[f] = icpParsed[f]!=null ? icpParsed[f] : null; });
+  entry.isIcp = true;
+  entry.id = uid();
+  // Use sample date if available, else today
+  if (icpParsed.sampleDate) {
+    entry.date = new Date(icpParsed.sampleDate+'T12:00:00').toISOString();
+  } else {
+    entry.date = new Date().toISOString();
+  }
+  entry.note = '';
+  if (!tank.measurements) tank.measurements = [];
+  tank.measurements.unshift(entry);
+  tank.measurements.sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+  saveState();
+  closeIcpModal();
+  if (currentView==='log') renderLog();
+  else { destroyCharts(); chartsBuilt=false; renderCharts(); chartsBuilt=true; }
+  showToast('ICP imported ✓');
+}
+
+// ── Manual measurement modal ───────────────────────────────────
+function openMeasModal(id) {
+  editMeasId = id||null;
+  var tank = getActiveTank();
+  var entry = id?(tank.measurements||[]).find(function(e){ return e.id===id; }):null;
+  document.getElementById('measTitle').textContent = entry?'Edit Measurement':'New Measurement';
+  ALL_FIELDS.forEach(function(f){ var el=document.getElementById('f-'+f); if (el) el.value=(entry&&entry[f]!=null)?entry[f]:''; });
+  var dtEl=document.getElementById('f-datetime');
+  if (dtEl) {
+    var d=entry?new Date(entry.date):new Date();
+    dtEl.value=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')+'T'+String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+  }
+  document.getElementById('f-note').value=entry?(entry.note||''):'';
+  document.getElementById('ovM').classList.add('open');
+}
+function closeMeasModal() { document.getElementById('ovM').classList.remove('open'); editMeasId=null; }
+function openEditMeas(id) { openMeasModal(id); }
+
+function saveMeasurement() {
+  var tank=getActiveTank(); if (!tank) return;
+  var entry={};
+  ALL_FIELDS.forEach(function(f){
+    var el=document.getElementById('f-'+f);
+    var v=el?el.value.trim():'';
+    var num=parseFloat(v);
+    entry[f]=(v!==''&&isFinite(num))?num:null;
+  });
+  entry.note=document.getElementById('f-note').value.trim();
+  // Valid if at least one numeric field is filled
+  var hasValue=ALL_FIELDS.some(function(f){ return entry[f]!=null; });
+  if (!hasValue) { showToast('Enter at least one value',true); return; }
+  if (!tank.measurements) tank.measurements=[];
+  if (editMeasId) {
+    var idx=tank.measurements.findIndex(function(e){ return e.id===editMeasId; });
+    if (idx>=0) {
+      entry.id=editMeasId;
+      var dtI=document.getElementById('f-datetime');
+      entry.date=dtI&&dtI.value?new Date(dtI.value).toISOString():tank.measurements[idx].date;
+      entry.isIcp=tank.measurements[idx].isIcp;
+      tank.measurements[idx]=entry;
+      tank.measurements.sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+    }
+  } else {
+    entry.id=uid();
+    var dtN=document.getElementById('f-datetime');
+    entry.date=dtN&&dtN.value?new Date(dtN.value).toISOString():new Date().toISOString();
+    tank.measurements.unshift(entry);
+    tank.measurements.sort(function(a,b){ return new Date(b.date)-new Date(a.date); });
+  }
+  saveState(); closeMeasModal();
+  if (currentView==='log') renderLog();
+  else { destroyCharts(); chartsBuilt=false; renderCharts(); chartsBuilt=true; }
+  showToast(editMeasId?'Updated ✓':'Saved ✓');
+}
+
+function deleteMeas(id) {
+  if (!confirm('Delete this measurement?')) return;
+  var tank=getActiveTank();
+  tank.measurements=(tank.measurements||[]).filter(function(e){ return e.id!==id; });
+  saveState(); renderLog(); showToast('Deleted');
+}
+
+// ── Tank modal ────────────────────────────────────────────────
+function buildColorPicker() {
+  document.getElementById('colorPicker').innerHTML=TANK_COLORS.map(function(c) {
+    return '<div class="cpick'+(c===selectedColor?' sel':'')+'\" style="background:'+c+'" onclick="pickColor(\''+c+'\')"></div>';
+  }).join('');
+}
+function pickColor(c) { selectedColor=c; buildColorPicker(); }
+function openNewTank() {
+  editTankId=null; selectedColor=TANK_COLORS[state.tanks.length%TANK_COLORS.length];
+  document.getElementById('tankModalTitle').textContent='New Aquarium';
+  document.getElementById('tank-name').value='';
+  document.getElementById('tankDeleteBtn').style.display='none';
+  buildColorPicker(); document.getElementById('ovT').classList.add('open');
+}
+function openTankEdit() {
+  var tank=getActiveTank(); if (!tank) return;
+  editTankId=tank.id; selectedColor=tank.color;
+  document.getElementById('tankModalTitle').textContent='Edit Aquarium';
+  document.getElementById('tank-name').value=tank.name;
+  document.getElementById('tankDeleteBtn').style.display=state.tanks.length>1?'flex':'none';
+  buildColorPicker(); document.getElementById('ovT').classList.add('open');
+}
+function closeTankModal() { document.getElementById('ovT').classList.remove('open'); editTankId=null; }
+function saveTank() {
+  var name=document.getElementById('tank-name').value.trim();
+  if (!name) { showToast('Enter a tank name',true); return; }
+  if (editTankId) {
+    var t=state.tanks.find(function(t){ return t.id===editTankId; });
+    if (t) { t.name=name; t.color=selectedColor; }
+  } else {
+    var nt={id:uid(),name:name,color:selectedColor,measurements:[]};
+    state.tanks.push(nt); state.activeTank=nt.id;
+  }
+  saveState(); closeTankModal(); renderTabs();
+  if (currentView==='log') renderLog();
+  else { destroyCharts(); chartsBuilt=false; renderCharts(); chartsBuilt=true; }
+  showToast('Saved \u2713');
+}
+function deleteTank() {
+  var id = editTankId || state.activeTank;
+  var tank = state.tanks.find(function(t){ return t.id === id; });
+  if (!tank || state.tanks.length <= 1) return;
+  var hasMeas = (tank.measurements || []).length > 0;
+  if (hasMeas) {
+    pendingDeleteId = tank.id;
+    closeTankModal();
+    document.getElementById('delTankNameHint').textContent = '"' + tank.name + '"';
+    document.getElementById('delModalSub').textContent = 'This tank has ' + tank.measurements.length + ' measurement(s). Type the tank name to confirm deletion.';
+    document.getElementById('del-confirm-input').value = '';
+    document.getElementById('delConfirmBtn').disabled = true;
+    document.getElementById('delConfirmBtn').style.opacity = '.4';
+    document.getElementById('ovDel').classList.add('open');
+  } else {
+    if (!confirm('Delete "' + tank.name + '"?')) return;
+    doDeleteTank(tank.id);
+  }
+}
+function checkDeleteInput() {
+  var tank = pendingDeleteId ? state.tanks.find(function(t){ return t.id === pendingDeleteId; }) : null;
+  var val = document.getElementById('del-confirm-input').value;
+  var match = tank && val === tank.name;
+  document.getElementById('delConfirmBtn').disabled = !match;
+  document.getElementById('delConfirmBtn').style.opacity = match ? '1' : '.4';
+}
+function closeDeleteModal() {
+  document.getElementById('ovDel').classList.remove('open');
+  pendingDeleteId = null;
+}
+function confirmDeleteTank() {
+  var tank = pendingDeleteId ? state.tanks.find(function(t){ return t.id === pendingDeleteId; }) : null;
+  if (!tank) return;
+  var val = document.getElementById('del-confirm-input').value;
+  if (val !== tank.name) return;
+  closeDeleteModal();
+  doDeleteTank(tank.id);
+}
+function doDeleteTank(id) {
+  state.tanks = state.tanks.filter(function(t){ return t.id !== id; });
+  state.activeTank = state.tanks[0].id;
+  saveState(); renderTabs();
+  destroyCharts(); chartsBuilt = false;
+  if (currentView === 'log') renderLog();
+  else if (currentView === 'chart') { renderCharts(); chartsBuilt = true; }
+  else if (currentView === 'balling') renderBalling();
+  showToast('Tank deleted');
+}
+
+// ── Utils ─────────────────────────────────────────────────────
+function escHtml(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function showToast(msg,err) {
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.className='toast show'+(err?' err':'');
+  setTimeout(function(){ t.className='toast'; },2500);
+}
+
+// ── PWA Setup ─────────────────────────────────────────────────
+(function(){
+  // Register Service Worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js').then(function(reg) {
+      window._swReg = reg;
+      console.log('SW registered, scope:', reg.scope);
+      // Push reminders once SW is ready
+      navigator.serviceWorker.ready.then(function() {
+        pushRemindersToSW();
+      });
+    }).catch(function(err) {
+      console.warn('SW registration failed:', err);
+    });
+
+    // Listen for messages FROM the SW (done/snooze actions)
+    navigator.serviceWorker.addEventListener('message', function(e) {
+      if (!e.data) return;
+      if (e.data.type === 'REMINDER_DONE') {
+        markReminderDone(e.data.id);
+        if (currentView === 'remind') renderReminders();
+      }
+      if (e.data.type === 'REMINDER_SNOOZE') {
+        var r = reminders.find(function(x){ return x.id === e.data.id; });
+        if (r) {
+          r.dueTs = Date.now() + (e.data.minutes || 60) * 60000;
+          saveReminders();
+          pushRemindersToSW();
+          if (currentView === 'remind') renderReminders();
+          showToast('⏰ Snoozed 1 hour');
+        }
+      }
+    });
+  }
+  // Inline manifest via blob URL
+  var manifest = {
+    name: "Reef Tracker",
+    short_name: "Reef",
+    description: "Reef aquarium water parameter tracker",
+    start_url: ".",
+    display: "standalone",
+    background_color: "#0a0f1a",
+    theme_color: "#0a0f1a",
+    orientation: "portrait",
+    icons: [
+      { src: "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxODAiIGhlaW...", sizes: "180x180", type: "image/svg+xml", purpose: "any maskable" }
+    ]
+  };
+  try {
+    var blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+    var url  = URL.createObjectURL(blob);
+    document.getElementById('manifest-link').setAttribute('href', url);
+  } catch(e){}
+
+  // Show install banner if not already installed as PWA
+  var isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+  var dismissed = localStorage.getItem('pwa_banner_dismissed');
+  if (!isStandalone && !dismissed) {
+    // Show after 2s on iOS Safari
+    var ua = navigator.userAgent;
+    var isIos = /iphone|ipad|ipod/i.test(ua) && !/crios|fxios/i.test(ua);
+    if (isIos) {
+      setTimeout(function(){ document.getElementById('pwaBanner').style.display='flex'; }, 1500);
+    }
+  }
+})();
+
+function dismissBanner() {
+  document.getElementById('pwaBanner').style.display='none';
+  localStorage.setItem('pwa_banner_dismissed','1');
+}
+function openInstallGuide() {
+  document.getElementById('installOv').classList.add('open');
+}
+function closeInstallGuide() {
+  document.getElementById('installOv').classList.remove('open');
+  dismissBanner();
+}
+
+function toggleUserMenu() {
+  var m = document.getElementById('userMenu');
+  m.classList.toggle('open');
+  // Close on outside click
+  if (m.classList.contains('open')) {
+    setTimeout(function(){
+      document.addEventListener('click', function handler(e){
+        if (!m.contains(e.target) && e.target.id !== 'userAvatar') {
+          m.classList.remove('open');
+          document.removeEventListener('click', handler);
+        }
+      });
+    }, 0);
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────
+loadState(); renderTabs(); renderLog();
+
+window.runDebug = function() {
+  var d = document.getElementById('loginDebug');
+  if (!d) return;
+  var lines = [];
+  lines.push('firebase: ' + typeof firebase);
+  lines.push('fbAuth: ' + typeof window.fbAuth);
+  lines.push('doGoogleLogin: ' + typeof window.doGoogleLogin);
+  lines.push('loginBtn: ' + (document.getElementById('loginBtn') ? 'found' : 'NOT FOUND'));
+  if (typeof firebase !== 'undefined') {
+    lines.push('firebase.apps: ' + firebase.apps.length);
+  }
+  d.innerHTML = lines.join('<br>');
+};
+
+
+// ── REMINDERS ─────────────────────────────────────────────────
+var reminders = [];
+var remFormVisible = false;
+var remTankFilter = null;
+
+function testNotification() {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(function(reg) {
+      reg.showNotification('🐠 Reef Tracker Test', {
+        body: 'Push notifications are working! 🪸',
+        tag: 'reef-test',
+        vibrate: [200, 100, 200]
+      });
+    });
+  } else {
+    new Notification('🐠 Reef Tracker Test', { body: 'Push notifications are working! 🪸' });
+  }
+  showToast('Test notification sent!');
+}
+function loadReminders() {
+  // Reminders live in state.reminders — fall back to localStorage for migration
+  if (state.reminders && Array.isArray(state.reminders)) {
+    reminders = state.reminders;
+  } else {
+    try { reminders = JSON.parse(localStorage.getItem('reef_reminders_v1')) || []; } catch(e) { reminders = []; }
+    state.reminders = reminders;
+  }
+}
+function saveReminders() {
+  state.reminders = reminders;
+  saveState();
+  scheduleAllReminders();
+  pushRemindersToSW();
+}
+
+var remFormVisible = false;
+function toggleRemForm() {
+  remFormVisible = !remFormVisible;
+  renderReminders();
+}
+
+function renderReminders() {
+  loadReminders();
+  var el = document.getElementById('remindContent');
+  var notifPerm = ('Notification' in window) ? Notification.permission : 'unsupported';
+  var now = Date.now();
+  var activeTank = getActiveTank();
+
+  // Permission banner
+  var permBanner = '';
+  if (!('Notification' in window)) {
+    permBanner = `<div class="rem-perm-banner" style="border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.06)">
+      <span>❌</span><span style="flex:1">Notifications not supported. Install via Safari → "Add to Home Screen" for iOS.</span>
+    </div>`;
+  } else if (notifPerm === 'default') {
+    permBanner = `<div class="rem-perm-banner">
+      <div style="flex:1">🔔 Enable push notifications to get reminded on your phone</div>
+      <button class="rem-perm-btn" onclick="requestNotifPermission()">Enable</button>
+    </div>`;
+  } else if (notifPerm === 'granted') {
+    permBanner = `<div class="rem-perm-banner" style="border-color:rgba(34,197,94,.25);background:rgba(34,197,94,.06)">
+      <span>✅</span><span style="flex:1">Push notifications enabled</span>
+      <button class="rem-perm-btn" style="background:var(--surface2);color:var(--dim)" onclick="testNotification()">Test</button>
+    </div>`;
+  } else if (notifPerm === 'denied') {
+    permBanner = `<div class="rem-perm-banner" style="border-color:rgba(239,68,68,.25);background:rgba(239,68,68,.06)">
+      <span>🚫</span><span style="flex:1">Blocked — go to browser Settings → Site Settings → Notifications to allow.</span>
+    </div>`;
+  }
+
+  // Tank filter tabs
+  var tankFilter = `<div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:12px;scrollbar-width:none">
+    <div class="pill${!remTankFilter?' active':''}" onclick="remTankFilter=null;renderReminders()" style="${!remTankFilter?'background:var(--accent);border-color:var(--accent)':''}">All</div>
+    ${state.tanks.map(function(t){
+      var act = remTankFilter===t.id;
+      return '<div class="pill'+(act?' active':'')+'" onclick="remTankFilter=\''+t.id+'\';renderReminders()" style="'+(act?'background:'+t.color+';border-color:'+t.color:'')+'"><span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+t.color+';margin-right:4px"></span>'+escHtml(t.name)+'</div>';
+    }).join('')}
+  </div>`;
+
+  // Filter reminders by tank
+  var filtered = reminders.filter(function(r){
+    if (!remTankFilter) return true;
+    return r.tankId === remTankFilter || !r.tankId;
+  });
+
+  // New reminder form
+  var formHtml = '';
+  if (remFormVisible) {
+    var tankOpts = state.tanks.map(function(t) {
+      var sel = activeTank && t.id === activeTank.id ? ' selected' : '';
+      return '<option value="'+t.id+'"'+sel+'>'+escHtml(t.name)+'</option>';
+    }).join('');
+    formHtml = `<div class="rem-form">
+      <div class="rem-form-title">➕ New Reminder</div>
+      <div class="rem-field"><label>Title</label>
+        <input type="text" id="r-title" placeholder="e.g. Water change, ICP test, Dose Ca..." maxlength="60">
+      </div>
+      <div class="rem-field"><label>Note (optional)</label>
+        <textarea id="r-note" placeholder="Additional info..."></textarea>
+      </div>
+      <div class="rem-row">
+        <div class="rem-field"><label>Due date</label>
+          <input type="date" id="r-date" value="${new Date().toISOString().slice(0,10)}">
+        </div>
+        <div class="rem-field"><label>Time</label>
+          <input type="time" id="r-time" value="09:00">
+        </div>
+      </div>
+      <div class="rem-row">
+        <div class="rem-field"><label>Repeat</label>
+          <select id="r-repeat">
+            <option value="none">No repeat</option>
+            <option value="daily">Daily</option>
+            <option value="weekly" selected>Weekly</option>
+            <option value="biweekly">Every 2 weeks</option>
+            <option value="monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="rem-field"><label>Tank</label>
+          <select id="r-tank">
+            <option value="">All tanks</option>
+            ${tankOpts}
+          </select>
+        </div>
+      </div>
+      <button class="rem-save-btn" onclick="saveReminder()">💾 Save Reminder</button>
+    </div>`;
+  }
+
+  // Sort: overdue first, then by date
+  var sorted = filtered.slice().sort(function(a,b){ return a.dueTs - b.dueTs; });
+
+  var cardsHtml = sorted.map(function(r) {
+    var diff = r.dueTs - now;
+    var diffDays = Math.round(diff / 86400000);
+    var badge, cls;
+    if (r.done) {
+      badge = '<span class="rem-badge ok">✓ Done</span>'; cls = '';
+    } else if (diff < 0) {
+      var ago = Math.abs(diffDays);
+      badge = '<span class="rem-badge overdue">⚠️ '+(ago===0?'Today':ago+'d overdue')+'</span>'; cls = 'overdue';
+    } else if (diff < 3*86400000) {
+      badge = '<span class="rem-badge soon">'+(diffDays===0?'Today':diffDays===1?'Tomorrow':diffDays+'d left')+'</span>'; cls = 'soon';
+    } else {
+      badge = '<span class="rem-badge ok">'+diffDays+'d left</span>'; cls = '';
+    }
+    var tank = r.tankId ? state.tanks.find(function(t){return t.id===r.tankId;}) : null;
+    var tankDot = tank ? '<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:'+tank.color+';margin-right:3px"></span>' : '';
+    var tankName = tank ? tank.name : 'All tanks';
+    var repeatLabel = {none:'No repeat',daily:'Daily',weekly:'Weekly',biweekly:'Every 2 weeks',monthly:'Monthly'}[r.repeat]||r.repeat;
+    var dueStr = new Date(r.dueTs).toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    return `<div class="rem-card ${cls}">
+      <div class="rem-card-head">
+        <div style="flex:1;min-width:0">
+          <div class="rem-name">${escHtml(r.title)}</div>
+          ${r.note?'<div class="rem-note">'+escHtml(r.note)+'</div>':''}
+        </div>
+        ${badge}
+      </div>
+      <div class="rem-schedule">
+        <span>📅 ${dueStr}</span>
+        <span style="opacity:.4">·</span>
+        <span>🔁 ${repeatLabel}</span>
+        <span style="opacity:.4">·</span>
+        <span>${tankDot}${escHtml(tankName)}</span>
+      </div>
+      <div class="rem-actions">
+        ${!r.done?'<button class="rem-btn done-btn" data-rid="'+r.id+'" onclick="markReminderDone(this.dataset.rid)">✓ Done</button>':''}
+        ${r.repeat!=='none'&&r.done?'<button class="rem-btn done-btn" data-rid="'+r.id+'" onclick="snoozeReminder(this.dataset.rid)">🔁 Reschedule</button>':''}
+        <button class="rem-btn" data-rid="${r.id}" onclick="editReminder(this.dataset.rid)">✏️ Edit</button>
+        <button class="rem-btn del-btn" data-rid="${r.id}" onclick="deleteReminder(this.dataset.rid)">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  if (!filtered.length) {
+    cardsHtml = `<div class="rem-empty">
+      <div class="rem-empty-icon">🔔</div>
+      <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px">${remTankFilter?'No reminders for this tank':'No reminders yet'}</div>
+      <div style="font-size:13px">Add reminders for water changes, ICP tests, dosing and more.</div>
+    </div>`;
+  }
+
+  el.innerHTML = `<div style="padding-bottom:24px">
+    ${permBanner}
+    ${tankFilter}
+    <button class="rem-add-btn" onclick="toggleRemForm()">${remFormVisible?'✕ Cancel':'➕ Add Reminder'}</button>
+    ${formHtml}
+    ${cardsHtml}
+  </div>`;
+}
+
+function saveReminder(editId) {
+  var title = document.getElementById('r-title').value.trim();
+  if (!title) { showToast('Enter a title', true); return; }
+  var dateVal = document.getElementById('r-date').value;
+  var timeVal = document.getElementById('r-time').value || '09:00';
+  if (!dateVal) { showToast('Pick a date', true); return; }
+  var dueTs = new Date(dateVal + 'T' + timeVal).getTime();
+  var rem = {
+    id: editId || uid(),
+    title: title,
+    note: document.getElementById('r-note').value.trim(),
+    dueTs: dueTs,
+    repeat: document.getElementById('r-repeat').value,
+    tankId: document.getElementById('r-tank').value,
+    done: false,
+    createdTs: Date.now()
+  };
+  if (editId) {
+    reminders = reminders.map(function(r){ return r.id===editId ? rem : r; });
+  } else {
+    reminders.push(rem);
+  }
+  saveReminders();
+  scheduleNotification(rem);
+  remFormVisible = false;
+  renderReminders();
+  showToast('Reminder saved ✓');
+}
+
+function markReminderDone(id) {
+  var r = reminders.find(function(r){ return r.id===id; });
+  if (!r) return;
+  r.done = true;
+  if (r.repeat !== 'none') {
+    // Auto-advance due date
+    r.dueTs = nextDueTs(r.dueTs, r.repeat);
+    r.done = false;
+    showToast('🔁 Rescheduled');
+  } else {
+    showToast('✓ Marked as done');
+  }
+  saveReminders();
+  renderReminders();
+}
+
+function snoozeReminder(id) {
+  var r = reminders.find(function(r){ return r.id===id; });
+  if (!r) return;
+  r.dueTs = nextDueTs(r.dueTs, r.repeat);
+  r.done = false;
+  saveReminders();
+  scheduleNotification(r);
+  renderReminders();
+  showToast('🔁 Rescheduled');
+}
+
+function nextDueTs(ts, repeat) {
+  var d = new Date(ts);
+  if (repeat==='daily')     d.setDate(d.getDate()+1);
+  else if (repeat==='weekly')    d.setDate(d.getDate()+7);
+  else if (repeat==='biweekly')  d.setDate(d.getDate()+14);
+  else if (repeat==='monthly')   d.setMonth(d.getMonth()+1);
+  return d.getTime();
+}
+
+function deleteReminder(id) {
+  reminders = reminders.filter(function(r){ return r.id!==id; });
+  saveReminders();
+  renderReminders();
+  showToast('Reminder deleted');
+}
+
+function editReminder(id) {
+  var r = reminders.find(function(r){ return r.id===id; });
+  if (!r) return;
+  remFormVisible = true;
+  renderReminders();
+  // Fill form
+  document.getElementById('r-title').value = r.title;
+  document.getElementById('r-note').value = r.note||'';
+  var d = new Date(r.dueTs);
+  document.getElementById('r-date').value = d.toISOString().slice(0,10);
+  document.getElementById('r-time').value = d.toTimeString().slice(0,5);
+  document.getElementById('r-repeat').value = r.repeat;
+  document.getElementById('r-tank').value = r.tankId||'';
+  // Override save button to update
+  document.querySelector('.rem-save-btn').onclick = function(){ saveReminder(r.id); };
+}
+
+// Send all reminders to SW (IndexedDB) so it can fire in background
+// ── Notification scheduling ────────────────────────────────────
+// Strategy: schedule via SW.showNotification (works while tab open,
+// fires from SW context so it shows even if tab is backgrounded).
+// We keep a map of active timers and reschedule on every save/load.
+
+var _remTimers = {}; // id -> timeoutId
+
+function clearAllRemTimers() {
+  Object.keys(_remTimers).forEach(function(id) {
+    clearTimeout(_remTimers[id]);
+  });
+  _remTimers = {};
+}
+
+function scheduleAllReminders() {
+  if (Notification.permission !== 'granted') return;
+  clearAllRemTimers();
+  var now = Date.now();
+  reminders.forEach(function(r) {
+    if (r.done) return;
+    var delay = r.dueTs - now;
+    if (delay < 0) return; // already overdue, don't re-fire on load
+    if (delay > 2147483647) return; // >24 days, skip (will reschedule on next app open)
+    _remTimers[r.id] = setTimeout(function() {
+      fireReminderNotification(r);
+      delete _remTimers[r.id];
+    }, delay);
+  });
+}
+
+function fireReminderNotification(r) {
+  var tank = r.tankId ? state.tanks.find(function(t){ return t.id===r.tankId; }) : null;
+  var body = (r.note || 'Time to take care of your reef! 🪸') + (tank ? ' · ' + tank.name : '');
+  // Use SW showNotification — works even when tab is in background
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.ready.then(function(reg) {
+      reg.showNotification('🐠 ' + r.title, {
+        body: body,
+        tag: 'reef-reminder-' + r.id,
+        data: { reminderId: r.id },
+        vibrate: [200, 100, 200, 100, 200],
+        requireInteraction: true,
+        actions: [
+          { action: 'done',   title: '✓ Done' },
+          { action: 'snooze', title: '⏰ +1h' }
+        ]
+      });
+    });
+  } else if (Notification.permission === 'granted') {
+    new Notification('🐠 ' + r.title, { body: body, tag: 'reef-reminder-' + r.id });
+  }
+}
+
+function pushRemindersToSW() {
+  // Also store in SW IndexedDB as background fallback (if app is closed)
+  if (!('serviceWorker' in navigator)) return;
+  if (Notification.permission !== 'granted') return;
+  navigator.serviceWorker.ready.then(function(reg) {
+    if (!reg.active) return;
+    var payload = reminders.filter(function(r){ return !r.done; }).map(function(r) {
+      var tank = r.tankId ? state.tanks.find(function(t){ return t.id===r.tankId; }) : null;
+      return Object.assign({}, r, { tankName: tank ? tank.name : '' });
+    });
+    reg.active.postMessage({ type: 'SCHEDULE_REMINDERS', reminders: payload });
+  });
+}
+
+function scheduleNotification(r) {
+  // Full reschedule of all reminders (simpler than patching one)
+  scheduleAllReminders();
+  pushRemindersToSW();
+}
+
+function requestNotifPermission() {
+  if (!('Notification' in window)) {
+    showToast('Notifications not supported in this browser', true);
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    scheduleAllReminders();
+    pushRemindersToSW();
+    showToast('✅ Notifications already enabled!');
+    renderReminders();
+    return;
+  }
+  if (Notification.permission === 'denied') {
+    showToast('Notifications blocked — enable them in browser settings', true);
+    return;
+  }
+  Notification.requestPermission().then(function(p) {
+    if (p === 'granted') {
+      showToast('✅ Notifications enabled!');
+      scheduleAllReminders();
+      pushRemindersToSW();
+    } else {
+      showToast('Notifications blocked', true);
+    }
+    renderReminders();
+  });
+}
+
+function initReminders() {
+  loadReminders();
+  navigator.serviceWorker && navigator.serviceWorker.ready.then(function() {
+    scheduleAllReminders();
+    pushRemindersToSW();
+    // Tab-side keep-alive: ping SW every 55s so it stays alive for background checks
+    setInterval(function() {
+      fetch('?sw-keepalive').catch(function(){});
+    }, 55000);
+  });
+}
+var FIREBASE_CONFIG = {
+  apiKey:            "AIzaSyAxlBsgyyv8g6-WvCiJrd62OCThyIakUOg",
+  authDomain:        "reef-tracker-21935.firebaseapp.com",
+  projectId:         "reef-tracker-21935",
+  storageBucket:     "reef-tracker-21935.firebasestorage.app",
+  messagingSenderId: "1094453859244",
+  appId:             "1:1094453859244:web:a2d4e2bebd52ab3bb02009"
+};
+
+firebase.initializeApp(FIREBASE_CONFIG);
+var fbAuth = firebase.auth();
+var fbDb   = firebase.firestore();
+var provider = new firebase.auth.GoogleAuthProvider();
+provider.setCustomParameters({ prompt: 'select_account' });
+
+var currentUser = null;
+var unsubSnapshot = null;
+
+// ── Auth state ─────────────────────────────────────────────────
+fbAuth.onAuthStateChanged(function(user) {
+  currentUser = user;
+  if (user) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appRoot').style.display    = 'block';
+    document.getElementById('userAvatar').textContent   = user.displayName ? user.displayName[0].toUpperCase() : '👤';
+    document.getElementById('userAvatar').title         = (user.displayName || '') + ' — ' + user.email;
+    var mn = document.getElementById('userMenuName');
+    if (mn) mn.textContent = user.displayName || user.email;
+    subscribeToFirestore(user.uid);
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appRoot').style.display    = 'none';
+    if (unsubSnapshot) { unsubSnapshot(); unsubSnapshot = null; }
+  }
+});
+
+// ── Firestore real-time sync ───────────────────────────────────
+function uploadLocalToFirestore() {
+  var local = null;
+  try { local = JSON.parse(localStorage.getItem('reef_tracker_v3')); } catch(e){}
+  if (!local) try { local = JSON.parse(localStorage.getItem('reef_tracker_v2')); } catch(e){}
+  if (local && local.tanks && local.tanks.length) {
+    state = local;
+    renderTabs();
+    destroyCharts(); chartsBuilt = false;
+    if (currentView === 'log') renderLog();
+    else { renderCharts(); chartsBuilt = true; }
+    window.fbSaveState();
+    showToast('✅ Local data synced to cloud');
+  } else {
+    createDefaultTank();
+    renderTabs();
+    if (currentView === 'log') renderLog();
+  }
+}
+
+function subscribeToFirestore(uid) {
+  if (unsubSnapshot) unsubSnapshot();
+  var ref = fbDb.collection('users').doc(uid).collection('data').doc('state');
+  unsubSnapshot = ref.onSnapshot(function(snap) {
+    if (snap.exists) {
+      var remote = snap.data().state;
+      if (remote && remote.tanks && remote.tanks.length) {
+        // Firestore has data — use it
+        window._suppressSave = true;
+        state = remote;
+        if (!state.activeTank && state.tanks.length) state.activeTank = state.tanks[0].id;
+        // Sync reminders from cloud state
+        reminders = state.reminders || [];
+        renderTabs();
+        destroyCharts(); chartsBuilt = false;
+        if (currentView === 'log') renderLog();
+        else if (currentView === 'remind') renderReminders();
+        else { renderCharts(); chartsBuilt = true; }
+        window._suppressSave = false;
+        try { localStorage.setItem('reef_tracker_v3', JSON.stringify(state)); } catch(e){}
+        pushRemindersToSW();
+      } else {
+        // Firestore doc exists but is empty — upload localStorage
+        uploadLocalToFirestore();
+      }
+    } else {
+      // No Firestore doc at all — upload localStorage
+      uploadLocalToFirestore();
+    }
+  }, function(err) {
+    showToast('⚠️ Sync error: ' + err.message, true);
+  });
+}
+
+// ── Save to Firestore ─────────────────────────────────────────
+window.fbSaveState = function() {
+  if (!currentUser || window._suppressSave) return Promise.resolve();
+  if (!state.tanks || state.tanks.length === 0) return Promise.resolve();
+  // Make sure reminders are included
+  state.reminders = reminders;
+  function deepClean(obj) {
+    if (Array.isArray(obj)) return obj.map(deepClean);
+    if (obj !== null && typeof obj === 'object') {
+      var out = {};
+      Object.keys(obj).forEach(function(k) {
+        var v = obj[k];
+        out[k] = deepClean(v);
+      });
+      return out;
+    }
+    if (obj === undefined || obj === null) return null;
+    if (typeof obj === 'number' && !isFinite(obj)) return null;
+    return obj;
+  }
+  var clean = deepClean(state);
+  var ref = fbDb.collection('users').doc(currentUser.uid).collection('data').doc('state');
+  return ref.set({ state: clean }).catch(function(e) {
+    showToast('⚠️ Save failed: ' + e.message, true);
+  });
+};
+
+// ── Google Login ───────────────────────────────────────────────
+window.doGoogleLogin = window.directLogin;
+
+window.doLogout = function() {
+  // Save current state to localStorage before logout so data is never lost
+  try { localStorage.setItem('reef_tracker_v3', JSON.stringify(state)); } catch(e){}
+  if (unsubSnapshot) { unsubSnapshot(); unsubSnapshot = null; }
+  fbAuth.signOut();
+};
+
+// Wire main login button same way as directLogin
+document.getElementById('loginBtn').addEventListener('click', function() {
+  var p = new firebase.auth.GoogleAuthProvider();
+  p.setCustomParameters({ prompt: 'select_account' });
+  firebase.auth().signInWithPopup(p)
+    .then(function(r) { console.log('logged in', r.user.email); })
+    .catch(function(e) {
+      var errEl = document.getElementById('loginError');
+      if (errEl) { errEl.textContent = 'Error: ' + e.message; errEl.style.display = 'block'; }
+    });
+});
+
+window.directLogin = function() {
+  var d = document.getElementById('loginDebug');
+  if (d) d.textContent = 'Starting login…';
+  var provider2 = new firebase.auth.GoogleAuthProvider();
+  provider2.setCustomParameters({ prompt: 'select_account' });
+  firebase.auth().signInWithPopup(provider2)
+    .then(function(r) { if (d) d.textContent = '✅ Signed in: ' + r.user.email; })
+    .catch(function(e) { if (d) d.innerHTML = '❌ ' + e.code + '<br>' + e.message; });
+};
+
+// Init reminders last — after all functions are defined
+initReminders();
+</script>
+</body>
+</html>
