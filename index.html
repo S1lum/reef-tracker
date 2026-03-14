@@ -977,7 +977,7 @@ function renderCalc() {
           <div class="calc-input-row"><input type="number" id="c-sal-should" placeholder="35.0" step="0.1" min="0" max="45" oninput="calcSalt()"><span class="calc-unit">PSU</span></div>
         </div>
         <div class="calc-field">
-          <label>${'Water volume'}</label>
+          <label>Water volume</label>
           <div class="calc-input-row">
             <input type="number" id="c-vol" placeholder="300" step="1" min="0" oninput="calcSalt()">
             <select id="c-vol-unit" onchange="calcSalt()" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);border-radius:10px;padding:8px 10px;font-family:'Outfit',sans-serif;font-size:14px;outline:none">
@@ -995,11 +995,11 @@ function renderCalc() {
       <div class="calc-sub">How much water to change to reach target salinity?</div>
       <div class="calc-fields">
         <div class="calc-field">
-          <label>${'Current salinity'}</label>
+          <label>Current salinity</label>
           <div class="calc-input-row"><input type="number" id="c-wc-current" placeholder="36.0" step="0.1" min="0" max="45" oninput="calcWaterChange()"><span class="calc-unit">PSU</span></div>
         </div>
         <div class="calc-field">
-          <label>${'Target salinity'}</label>
+          <label>Target salinity</label>
           <div class="calc-input-row"><input type="number" id="c-wc-target" placeholder="35.0" step="0.1" min="0" max="45" oninput="calcWaterChange()"><span class="calc-unit">PSU</span></div>
         </div>
         <div class="calc-field">
@@ -1171,7 +1171,7 @@ function renderBalling() {
         <div><span style="color:#ea6c1c;font-weight:700">Solution 1 (Ca):</span> 10 ml / 100 L → +11 mg/L Ca</div>
         <div><span style="color:#d63384;font-weight:700">Solution 2 (Mg):</span> 10 ml / 100 L → +5 mg/L Mg</div>
         <div><span style="color:#783cb4;font-weight:700">Solution 3 (KH):</span> 10 ml / 100 L → +0.5 dKH</div>
-        <div style="margin-top:6px;opacity:.7">${'Add solutions separately with a few minutes apart. Never mix concentrates directly.'}</div>
+        <div style="margin-top:6px;opacity:.7">Add solutions separately with a few minutes apart. Never mix concentrates directly.</div>
       </div>
     </div>
   </div>
@@ -1223,7 +1223,7 @@ function calcBalling() {
   }
 
   var html = rows.map(function(r) {
-    if (r.diff === 0) return `<div class="balling-res-row"><span style="color:${r.color};font-weight:700">${r.label}</span><span style="color:var(--green)">${'✓ At target'}</span></div>`;
+    if (r.diff === 0) return `<div class="balling-res-row"><span style="color:${r.color};font-weight:700">${r.label}</span><span style="color:var(--green)">✓ At target</span></div>`;
     if (r.diff < 0)  return `<div class="balling-res-row"><span style="color:${r.color};font-weight:700">${r.label}</span><span style="color:var(--yellow)">⚠️ ${r.param} too high by ${Math.abs(r.diff).toFixed(1)} ${r.unit} — do a water change</span></div>`;
     return `<div class="balling-res-row">
       <div style="color:${r.color};font-weight:700;font-size:13px">${r.label}</div>
@@ -1734,14 +1734,14 @@ function renderTrace() {
     { key:'li', label:'Lithium',  symbol:'Li', mugPer:15,  ref:200,  type:'C' },
   ];
 
-  var rows = TRACES.map(function(t) {
+  var rows = TRACES.map(function(tr) {
     return `
     <div class="trace-row" id="trace-row-${tr.key}">
       <div class="trace-name">
         <span class="trace-sym">${tr.symbol}</span>
         <span class="trace-label">${tr.label}</span>
         <span class="trace-ref">Ref: ${tr.ref} μg/L</span>
-        <span class="trace-type trace-type-${t.type.toLowerCase()}">${tr.type}</span>
+        <span class="trace-type trace-type-${tr.type.toLowerCase()}">${tr.type}</span>
       </div>
       <div class="trace-inputs">
         <div class="trace-inp-grp">
@@ -1762,7 +1762,7 @@ function renderTrace() {
           <input type="datetime-local" id="tr-dt-${tr.key}"
             style="width:100%;padding:7px 10px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:12px;font-family:Outfit,sans-serif;outline:none;box-sizing:border-box">
         </div>
-        <button class="trace-save-btn" style="margin-top:18px" onclick="saveTraceEntry('${tr.key}','${tr.label}')">💾 ${'Save'}</button>
+        <button class="trace-save-btn" style="margin-top:18px" onclick="saveTraceEntry('${tr.key}','${tr.label}')">💾 Save</button>
       </div>
       <div class="trace-history" id="tr-hist-${tr.key}"></div>
     </div>`;
@@ -1772,22 +1772,22 @@ function renderTrace() {
   document.getElementById('traceContent').innerHTML = `
     <div class="calc-title">🧪 Trace Dosing</div>
     <div class="calc-sub">
-      ${'Based on'} <a href="https://www.zlements.com/de/zlements-calculator" target="_blank" style="color:var(--accent2);text-decoration:none">Reef Zlements Advanced Traces</a><br>
+      Based on <a href="https://www.zlements.com/de/zlements-calculator" target="_blank" style="color:var(--accent2);text-decoration:none">Reef Zlements Advanced Traces</a><br>
       <span style="color:var(--dim);font-size:11px">Reference values: Fauna Marin ICP · Type A = mixable · Type C = dose separately</span>
     </div>
 
     <div class="trace-vol-bar">
-      <span style="font-size:13px;color:var(--dim);font-weight:600">${'Tank Volume (Net)'}</span>
+      <span style="font-size:13px;color:var(--dim);font-weight:600">Tank Volume (Net)</span>
       <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
         <input type="number" id="trace-vol" placeholder="300" value="${vol||''}" min="1" step="1"
           oninput="recalcAllTraces()"
           style="flex:1;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;color:var(--text);font-size:14px;font-family:Outfit,sans-serif;outline:none">
-        <span style="color:var(--dim);font-size:13px;font-weight:600;white-space:nowrap">${'litres'}</span>
+        <span style="color:var(--dim);font-size:13px;font-weight:600;white-space:nowrap">litres</span>
       </div>
     </div>
 
     <div style="margin-bottom:14px">
-      <div style="font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">${'Select element'}</div>
+      <div style="font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Select element</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px" id="trace-pill-bar">
         ${TRACES.map(function(tr,i){
           var active = i===0;
@@ -1802,9 +1802,9 @@ function renderTrace() {
     <div id="trace-rows">${rows}</div>
 
     <div style="margin-top:16px;padding:12px 14px;background:var(--surface2);border-radius:12px;border:1px solid var(--border);font-size:11px;color:var(--dim);line-height:1.7">
-      <strong style="color:var(--text)">${'Dosing formula:'}</strong> ml = (Ziel − Ist) × Volume ÷ Productkonzentration<br>
+      <strong style="color:var(--text)">Dosing formula:</strong> ml = (Ziel − Ist) × Volume ÷ Productkonzentration<br>
       All values in μg/L · Volume in litres · Result in ml.<br>
-      <strong style="color:var(--yellow)">${'⚠ Max. single dose:'}</strong> never increase by more than 10% of the target value per day.
+      <strong style="color:var(--yellow)">⚠ Max. single dose:</strong> never increase by more than 10% of the target value per day.
     </div>
 
     <div style="margin-top:16px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:14px">
@@ -1966,10 +1966,10 @@ function renderTraceHistory(key) {
   if (!entries.length) { el.innerHTML = ''; return; }
 
   el.innerHTML = `
-    <div class="trace-hist-title">${'History'}</div>
+    <div class="trace-hist-title">History</div>
     <table class="trace-hist-table">
       <thead><tr>
-        <th>${'Date & Time'}</th><th>${'Current'}</th><th>${'Target'}</th><th>Vol</th><th>${'Dose'}</th><th></th>
+        <th>Date & Time</th><th>Current</th><th>Target</th><th>Vol</th><th>Dose</th><th></th>
       </tr></thead>
       <tbody>
         ${entries.map(function(e) {
@@ -2092,7 +2092,7 @@ function renderDose() {
     var defItems = editing ? editing.items : [{name:'Balling 1 Ca',amount:'',unit:'ml'},{name:'Balling 2 Mg',amount:'',unit:'ml'},{name:'Balling 3 KH',amount:'',unit:'ml'}];
     formHtml = `<div class="rem-form" id="doseForm">
       <div class="rem-form-title">${doseEditId?'✏️ Edit':'➕ New'} Dosing Entry</div>
-      <div class="rem-field"><label>${'Date & Time'}</label>
+      <div class="rem-field"><label>Date & Time</label>
         <input type="datetime-local" id="d-date" value="${defDate}">
       </div>
       <div class="rem-form-title" style="font-size:13px;margin:12px 0 6px">Dosing Items</div>
@@ -2643,7 +2643,7 @@ function renderInhabitants() {
       <div class="rem-field"><label>Note (optional)</label>
         <textarea id="ih-note" placeholder="Observations, health notes...">${ed?escHtml(ed.note||''):''}</textarea>
       </div>
-      <button class="rem-save-btn" onclick="saveInhabitant()">💾 ${'Save'}</button>
+      <button class="rem-save-btn" onclick="saveInhabitant()">💾 Save</button>
     </div>`;
   }
 
@@ -3796,7 +3796,7 @@ function renderReminders() {
         <textarea id="r-note" placeholder="Additional info..."></textarea>
       </div>
       <div class="rem-row">
-        <div class="rem-field"><label>${'Due date'}</label>
+        <div class="rem-field"><label>Due date</label>
           <input type="date" id="r-date" value="${new Date().toISOString().slice(0,10)}">
         </div>
         <div class="rem-field"><label>Time</label>
